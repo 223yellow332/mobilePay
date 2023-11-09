@@ -3,6 +3,9 @@ package com.calmdown.mobilePay.domain.pay.entity;
 import com.calmdown.mobilePay.domain.model.BaseTimeEntity;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Table(name="payments")
 @Entity
 public class Payment extends BaseTimeEntity {
@@ -13,9 +16,11 @@ public class Payment extends BaseTimeEntity {
     @Column(name="payment_id")
     private long id;
 
-    //가맹점 ID (N:1)
+    //결제(1) : 취소(N)
+    @OneToMany(mappedBy = "payment")
+    private List<Cancel> cancels = new ArrayList<Cancel>();
 
-    //상태코드 [AUTH_SUCCESS, AUTH_FAILURE]
+    //상태코드 [AUTH_READY, AUTH_SUCCESS, AUTH_FAILURE]
     @Enumerated(EnumType.STRING)
     @Column(name="status_code")
     private AuthStatus authStatus;
@@ -32,20 +37,9 @@ public class Payment extends BaseTimeEntity {
     @Column(nullable = false)
     private String phone;
 
-    //고객 이름
-    @Column(name="user_name")
-    private String userName;
-
-    //생년월일
-    @Column(name="birthday", nullable = false)
-    private String socialNumber;
-
-    //성별
-    @Column(nullable = false)
-    private String gender;
-
-    //E-mail
-    private String email;
+    //Embedded: 상세 고객 정보 (고객이름, 생년월일, 성별, Email)
+    @Embedded
+    private UserInfo userInfo;
 
     //가맹점 거래번호
     @Column(name="merchant_trxid")
