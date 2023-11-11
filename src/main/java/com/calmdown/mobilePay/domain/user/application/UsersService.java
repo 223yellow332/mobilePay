@@ -1,4 +1,4 @@
 package com.calmdown.mobilePay.domain.user.application;
 
-public class userService {
+public class UsersService {
 }
