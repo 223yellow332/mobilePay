@@ -1,7 +1,9 @@
 package com.calmdown.mobilePay.domain.pay.repository;
 
+import com.calmdown.mobilePay.domain.pay.entity.AuthStatus;
 import com.calmdown.mobilePay.domain.pay.entity.CarrierName;
 import com.calmdown.mobilePay.domain.pay.entity.MobileCarrier;
+import com.calmdown.mobilePay.domain.pay.entity.Payment;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,12 +25,22 @@ class MobileCarrierRepositoryTest {
 
     @Autowired
     private MobileCarrierRepository mobileCarrierRepository;
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     @Test
     @DisplayName("저장 후 등록 조회")
     void saveAndSelect() {
         //given
+        Payment payment = paymentRepository.save(Payment.builder()
+                .phone("01012344885")
+                .carrierName(CarrierName.KT)
+                .authStatus(AuthStatus.AUTH_READY)
+                .payAmount(24000L)
+                .build());
+
         MobileCarrier mobileCarrier = MobileCarrier.builder()
+                .payment(payment)
                 .carrierName(CarrierName.SK)
                 .carrierTrxid("SK_TEST_"+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")))
                 .carrierReturnCode("0")
