@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @NoArgsConstructor
 @Getter
 @ToString
@@ -17,6 +20,9 @@ public class Merchant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "merchant_id")
     private long id;
+
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
+    private List<MerchantUser> merchantUsers = new ArrayList<>();
 
     @Column(length = 50, nullable = false)
     private  String merchantName;

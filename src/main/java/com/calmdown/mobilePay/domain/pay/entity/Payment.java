@@ -1,6 +1,8 @@
 package com.calmdown.mobilePay.domain.pay.entity;
 
+import com.calmdown.mobilePay.domain.merchant.entity.Merchant;
 import com.calmdown.mobilePay.domain.model.BaseTimeEntity;
+import com.calmdown.mobilePay.domain.pay.repository.MobileCarrierRepository;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +26,10 @@ public class Payment extends BaseTimeEntity {
     @Column(name="payment_id")
     private long id;
 
+    @OneToOne
+    @JoinColumn(name = "merchant_id")
+    private Merchant merchant;
+
     //결제(1) : 취소(N)
     @OneToMany(mappedBy = "payment")
     private List<Cancel> cancels = new ArrayList<Cancel>();
@@ -31,6 +37,10 @@ public class Payment extends BaseTimeEntity {
     //결제(1) : SMS(N)
     @OneToMany(mappedBy = "payment")
     private List<SmsCheck> smsChecks = new ArrayList<SmsCheck>();
+
+    @OneToOne(mappedBy = "payment")
+    @PrimaryKeyJoinColumn
+    private MobileCarrier mobileCarrier;
 
     //상태코드 [AUTH_READY, AUTH_SUCCESS, AUTH_FAILURE]
     @Enumerated(EnumType.STRING)
@@ -64,7 +74,9 @@ public class Payment extends BaseTimeEntity {
     private Date merchantReqDt;
 
     @Builder
-    public Payment(AuthStatus authStatus, CarrierName carrierName, long payAmount, String phone) {
+    public Payment(Merchant merchant, AuthStatus authStatus, CarrierName carrierName, long payAmount, String phone
+    ,UserInfo userInfo, String merchantTrxid, Date merchantReqDt) {
+        this.merchant = merchant;
         this.authStatus = authStatus;
         this.carrierName = carrierName;
         this.payAmount = payAmount;

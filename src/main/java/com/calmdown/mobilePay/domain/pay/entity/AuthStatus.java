@@ -1,5 +1,5 @@
 package com.calmdown.mobilePay.domain.pay.entity;
 
 public enum AuthStatus {
-    AUTH_READY, AUTH_SUCCESS, AUTH_FAILURE
+    CERT_READY, CERT_SUCCESS, AUTH_READY, AUTH_SUCCESS, AUTH_FAILURE
 }
