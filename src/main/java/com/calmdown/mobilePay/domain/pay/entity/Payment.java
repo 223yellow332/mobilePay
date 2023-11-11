@@ -2,11 +2,18 @@ package com.calmdown.mobilePay.domain.pay.entity;
 
 import com.calmdown.mobilePay.domain.model.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@NoArgsConstructor
+@Getter
+@ToString
 @Table(name="payments")
 @Entity
 public class Payment extends BaseTimeEntity {
@@ -55,5 +62,13 @@ public class Payment extends BaseTimeEntity {
     //가맹점 요청일시
     @Temporal(TemporalType.TIMESTAMP)
     private Date merchantReqDt;
+
+    @Builder
+    public Payment(AuthStatus authStatus, CarrierName carrierName, long payAmount, String phone) {
+        this.authStatus = authStatus;
+        this.carrierName = carrierName;
+        this.payAmount = payAmount;
+        this.phone = phone;
+    }
 
 }

@@ -14,7 +14,7 @@ public class UserInfo {
     private String userName;
 
     //생년월일
-    @Column(name="birthday")
+    @Column(name="social_number")
     private String socialNumber;
 
     //성별
