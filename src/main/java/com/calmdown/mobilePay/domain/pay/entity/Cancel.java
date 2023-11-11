@@ -1,18 +1,19 @@
 package com.calmdown.mobilePay.domain.pay.entity;
 
+import com.calmdown.mobilePay.domain.model.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
 @Table(name="payments_cancel")
 @Getter
 @Entity
-public class Cancel {
+public class Cancel extends BaseTimeEntity {
 
     @Id @GeneratedValue
     @Column(name="cancel_id")
     private long id;
 
-    //결제(1) : 취소(N)
+    //취소(N) : 결제(1)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_id")
     private Payment payment;
