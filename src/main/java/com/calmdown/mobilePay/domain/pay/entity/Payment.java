@@ -1,6 +1,7 @@
 package com.calmdown.mobilePay.domain.pay.entity;
 
 import com.calmdown.mobilePay.domain.model.BaseTimeEntity;
+import com.calmdown.mobilePay.domain.pay.StatusCode;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +25,13 @@ public class Payment extends BaseTimeEntity {
     @Column(name="payment_id")
     private long id;
 
+    //가맹점 ID
+    //결제(N) : 가맹점(1)
+    //@ManyToOne(fetch = FetchType.LAZY)
+    @Column(name="merchant_id")
+    @JoinColumn(name = "merchant_id")
+    private long merchantId;
+
     //결제(1) : 취소(N)
     @OneToMany(mappedBy = "payment")
     private List<Cancel> cancels = new ArrayList<Cancel>();
@@ -35,7 +43,7 @@ public class Payment extends BaseTimeEntity {
     //상태코드 [AUTH_READY, AUTH_SUCCESS, AUTH_FAILURE]
     @Enumerated(EnumType.STRING)
     @Column(name="status_code")
-    private AuthStatus authStatus;
+    private StatusCode statusCode;
 
     //통신사명 [SK, KT, LGU]
     @Enumerated(EnumType.STRING)
@@ -64,11 +72,19 @@ public class Payment extends BaseTimeEntity {
     private Date merchantReqDt;
 
     @Builder
-    public Payment(AuthStatus authStatus, CarrierName carrierName, long payAmount, String phone) {
-        this.authStatus = authStatus;
-        this.carrierName = carrierName;
+    public Payment(StatusCode authStatus, CarrierName carrierName, long payAmount, String phone) {
+        this.statusCode = authStatus;
         this.payAmount = payAmount;
         this.phone = phone;
+    }
+
+    @Builder(builderMethodName = "certReqBuilder")
+    public Payment(String phone, CarrierName carrierName,
+                   UserInfo userInfo,  long payAmount){
+        this.phone = phone;
+        this.carrierName = carrierName;
+        this.userInfo = userInfo;
+        this.payAmount = payAmount;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.calmdown.mobilePay.domain.pay.entity;
 
 import com.calmdown.mobilePay.domain.model.BaseTimeEntity;
+import com.calmdown.mobilePay.domain.pay.StatusCode;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -23,7 +24,8 @@ public class Cancel extends BaseTimeEntity {
 
     //취소상태 [CANCEL_READY, CANCEL_SUCCESS, CANCEL_FAIL]
     @Enumerated(EnumType.STRING)
-    private CancelStatus cancelStatus;
+    private StatusCode cancelStatus;
+
 
 
 }
