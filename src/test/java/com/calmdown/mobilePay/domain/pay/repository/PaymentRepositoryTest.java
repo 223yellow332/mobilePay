@@ -3,10 +3,11 @@ package com.calmdown.mobilePay.domain.pay.repository;
 import com.calmdown.mobilePay.domain.merchant.entity.Merchant;
 import com.calmdown.mobilePay.domain.merchant.entity.ProgressCode;
 import com.calmdown.mobilePay.domain.merchant.repository.MerchantRepository;
-import com.calmdown.mobilePay.domain.pay.entity.AuthStatus;
+import com.calmdown.mobilePay.domain.pay.StatusCode;
 import com.calmdown.mobilePay.domain.pay.entity.CarrierName;
 import com.calmdown.mobilePay.domain.pay.entity.Payment;
 import org.junit.jupiter.api.DisplayName;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ class PaymentRepositoryTest {
 
         Payment payment = paymentRepository.save(Payment.builder()
                         .merchant(merchant)
-                        .authStatus(AuthStatus.AUTH_READY)
+                        .authStatus(StatusCode.AUTH_READY)
                         .carrierName(CarrierName.KT)
                         .payAmount(24000L)
                         .phone("01012344885")
@@ -58,3 +59,4 @@ class PaymentRepositoryTest {
 
     }
 }
+
