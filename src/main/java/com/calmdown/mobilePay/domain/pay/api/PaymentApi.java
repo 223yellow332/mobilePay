@@ -4,6 +4,7 @@ import com.calmdown.mobilePay.domain.pay.application.PaymentService;
 import com.calmdown.mobilePay.domain.pay.application.PaymentStatus;
 import com.calmdown.mobilePay.domain.pay.dto.CertificationRequest;
 import com.calmdown.mobilePay.domain.pay.dto.CertificationResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,8 @@ public class PaymentApi {
     private final PaymentStatus paymentStatus;
 
     @PostMapping("/payment/cert")
-    public ResponseEntity<CertificationResponse> cert(@RequestBody CertificationRequest certRequest) throws ParseException {
+    public ResponseEntity<CertificationResponse> cert(@RequestBody @Valid CertificationRequest certRequest) throws ParseException {
         return new ResponseEntity<>(paymentStatus.cert(certRequest), HttpStatus.OK);
     }
 }
+

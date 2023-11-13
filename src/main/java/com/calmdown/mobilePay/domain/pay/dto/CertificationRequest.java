@@ -1,7 +1,10 @@
 package com.calmdown.mobilePay.domain.pay.dto;
 
 import com.calmdown.mobilePay.global.dto.MobilePayMessageHeader;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -25,7 +28,7 @@ public class CertificationRequest extends MobilePayMessageHeader {
 	상품명		size max = 100	
      */
     @NotBlank
-    @Length(max = 11)
+    @Length(max = 11, message = "전화번호 길이 오류")
     //휴대전화번호
     public String phone;
 
@@ -47,12 +50,12 @@ public class CertificationRequest extends MobilePayMessageHeader {
     //이름
     public String userName;
 
-    @Length(max = 11)
+    @Length(max = 126)
     //email
     public String email;
 
-    @NotBlank
-    @Length(max = 10)
+    @Min(100l)
+    @Max(1000000l)
     //결제금액
     public Long payAmount;
 

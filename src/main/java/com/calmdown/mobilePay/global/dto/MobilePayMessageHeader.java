@@ -1,14 +1,20 @@
 package com.calmdown.mobilePay.global.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.validator.constraints.Length;
 
+@NoArgsConstructor
 @Getter
+@SuperBuilder
 public abstract class MobilePayMessageHeader {
 
     // 가맹점ID
-    @NotBlank
+    @NotNull
     public Long meerchantId;
 
     // 가맹점 주묹id

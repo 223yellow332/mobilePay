@@ -1,5 +1,11 @@
 package com.calmdown.mobilePay.global.dto;
 
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
+@NoArgsConstructor
+@SuperBuilder
 public abstract class MobilePayResposeMessage extends MobilePayMessageHeader{
 
     // 결과 코드
