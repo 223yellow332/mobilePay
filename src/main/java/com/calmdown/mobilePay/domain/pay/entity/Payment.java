@@ -2,7 +2,9 @@ package com.calmdown.mobilePay.domain.pay.entity;
 
 import com.calmdown.mobilePay.domain.merchant.entity.Merchant;
 import com.calmdown.mobilePay.domain.model.BaseTimeEntity;
+import com.calmdown.mobilePay.domain.pay.StatusCode;
 import com.calmdown.mobilePay.domain.pay.repository.MobileCarrierRepository;
+
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,6 +32,13 @@ public class Payment extends BaseTimeEntity {
     @JoinColumn(name = "merchant_id")
     private Merchant merchant;
 
+/*    //가맹점 ID
+    //결제(N) : 가맹점(1)
+    //@ManyToOne(fetch = FetchType.LAZY)
+    @Column(name="merchant_id")
+    @JoinColumn(name = "merchant_id")
+    private long merchantId;*/
+
     //결제(1) : 취소(N)
     @OneToMany(mappedBy = "payment")
     private List<Cancel> cancels = new ArrayList<Cancel>();
@@ -45,7 +54,7 @@ public class Payment extends BaseTimeEntity {
     //상태코드 [AUTH_READY, AUTH_SUCCESS, AUTH_FAILURE]
     @Enumerated(EnumType.STRING)
     @Column(name="status_code")
-    private AuthStatus authStatus;
+    private StatusCode statusCode;
 
     //통신사명 [SK, KT, LGU]
     @Enumerated(EnumType.STRING)
@@ -74,13 +83,24 @@ public class Payment extends BaseTimeEntity {
     private Date merchantReqDt;
 
     @Builder
-    public Payment(Merchant merchant, AuthStatus authStatus, CarrierName carrierName, long payAmount, String phone
+    public Payment(Merchant merchant, StatusCode authStatus, CarrierName carrierName, long payAmount, String phone
     ,UserInfo userInfo, String merchantTrxid, Date merchantReqDt) {
         this.merchant = merchant;
-        this.authStatus = authStatus;
+        this.statusCode = authStatus;
         this.carrierName = carrierName;
         this.payAmount = payAmount;
         this.phone = phone;
+    }
+
+
+
+    @Builder(builderMethodName = "certReqBuilder")
+    public Payment(String phone, CarrierName carrierName,
+                   UserInfo userInfo, long payAmount){
+        this.phone = phone;
+        this.carrierName = carrierName;
+        this.userInfo = userInfo;
+        this.payAmount = payAmount;
     }
 
 }

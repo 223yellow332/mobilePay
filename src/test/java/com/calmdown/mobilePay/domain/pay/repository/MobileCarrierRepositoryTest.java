@@ -1,9 +1,10 @@
 package com.calmdown.mobilePay.domain.pay.repository;
 
-import com.calmdown.mobilePay.domain.pay.entity.AuthStatus;
+import com.calmdown.mobilePay.domain.pay.StatusCode;
 import com.calmdown.mobilePay.domain.pay.entity.CarrierName;
 import com.calmdown.mobilePay.domain.pay.entity.MobileCarrier;
 import com.calmdown.mobilePay.domain.pay.entity.Payment;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +17,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
@@ -35,7 +35,7 @@ class MobileCarrierRepositoryTest {
         Payment payment = paymentRepository.save(Payment.builder()
                 .phone("01012344885")
                 .carrierName(CarrierName.KT)
-                .authStatus(AuthStatus.AUTH_READY)
+                .authStatus(StatusCode.AUTH_READY)
                 .payAmount(24000L)
                 .build());
 
