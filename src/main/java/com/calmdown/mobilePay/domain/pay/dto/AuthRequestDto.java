@@ -2,43 +2,43 @@ package com.calmdown.mobilePay.domain.pay.dto;
 
 import com.calmdown.mobilePay.global.dto.MobilePayMessageHeader;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.validator.constraints.Length;
 
-public class AuthRequest extends MobilePayMessageHeader {
+@NoArgsConstructor
+@Getter
+@ToString(callSuper = true)
+@SuperBuilder
+public class AuthRequestDto extends MobilePayMessageHeader {
 
-    /*
-바디	TRANSACTION_ID	not null		INT
-	휴대전화번호	not null	size max = 11
-	통신사	not null		SKT, KT, LGU
-	생년월일	not null	length = 6
-	성별	not null	F or M
-	결제금액	not null	length max = 10
-     */
-    @NotBlank
     //TRANSACTION_ID
+    @NotBlank
     public String transactionId;
 
+    //휴대전화번호
     @NotBlank
     @Length(max = 11)
-    //휴대전화번호
     public String phone;
 
-    @NotBlank
     //통신사
+    @NotBlank
     public String mobileCarrier;
 
-    @NotBlank
-    @Length(max = 8)
     //생년월일
+    @NotBlank
+    @Length(min = 8, max = 8)
     public String socialNumber;
 
+    //성별
     @NotBlank
     @Length(min = 1, max = 1)
-    //성별
     public String gender;
 
+    //결제금액
     @NotBlank
     @Length(max = 10)
-    //결제금액
     public Long payAmount;
 }

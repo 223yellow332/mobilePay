@@ -1,26 +1,51 @@
 package com.calmdown.mobilePay.domain.pay.api;
 
-import com.calmdown.mobilePay.domain.model.ResultCode;
-import com.calmdown.mobilePay.domain.pay.application.PaymentService;
-import com.calmdown.mobilePay.domain.pay.dto.PaymentCertRequestDto;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.calmdown.mobilePay.domain.pay.application.PaymentStatus;
+import com.calmdown.mobilePay.domain.pay.dto.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.text.ParseException;
 
 //@JsonAutoDetect
 @RequiredArgsConstructor
 @RestController
 public class PaymentApiController {
 
-    private final PaymentService paymentService;
+    private final PaymentStatus paymentStatus;
 
+    /*
+     * 인증
+     */
     @PostMapping("/api/cert")
-    public ResultCode cert(@RequestBody PaymentCertRequestDto paymentCertRequestDto){
-        paymentService.cert(paymentCertRequestDto);
-        return ResultCode.SUCCESS;
+    public ResponseEntity<CertResponseDto> cert(@RequestBody CertRequestDto certRequest) throws ParseException {
+        return new ResponseEntity<>(paymentStatus.cert(certRequest), HttpStatus.OK);
     }
 
+    /*
+     * SMS 인증번호 확인
+     */
+    @PostMapping("/api/smsCheck")
+    public ResponseEntity<SmsCheckResponseDto> smsCheck(@RequestBody SmsCheckRequestDto request) throws ParseException {
+        return new ResponseEntity<>(paymentStatus.smsCheck(request), HttpStatus.OK);
+    }
 
+    /*
+     * 승인
+     */
+    @PostMapping("/api/auth")
+    public ResponseEntity<AuthResponseDto> auth(@RequestBody AuthRequestDto request) throws ParseException {
+        return new ResponseEntity<>(paymentStatus.auth(request), HttpStatus.OK);
+    }
 
+    /*
+     * 취소
+     */
+    @PostMapping("/api/cancel")
+    public ResponseEntity<CancelResponseDto> cancel(@RequestBody CancelRequestDto request) throws ParseException {
+        return new ResponseEntity<>(paymentStatus.cancel(request), HttpStatus.OK);
+    }
 
 }

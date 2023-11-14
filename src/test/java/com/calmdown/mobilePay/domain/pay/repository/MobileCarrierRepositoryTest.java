@@ -35,7 +35,7 @@ class MobileCarrierRepositoryTest {
         Payment payment = paymentRepository.save(Payment.builder()
                 .phone("01012344885")
                 .carrierName(CarrierName.KT)
-                .authStatus(StatusCode.AUTH_READY)
+                .statusCode(StatusCode.AUTH_READY)
                 .payAmount(24000L)
                 .build());
 

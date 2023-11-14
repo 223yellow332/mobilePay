@@ -22,8 +22,8 @@ public class Users {
     @Column(name = "user_id")
     private Long id;
 
-    @OneToMany(mappedBy = "merchant")
-    private List<MerchantUser> merchantUsers = new ArrayList<>();
+//    @OneToMany
+//    private List<MerchantUser> merchantUsers = new ArrayList<>();
 
     @Column
     private String phone;
