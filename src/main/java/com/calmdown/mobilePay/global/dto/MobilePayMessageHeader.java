@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 @NoArgsConstructor
 @Getter
@@ -25,5 +28,6 @@ public abstract class MobilePayMessageHeader {
     // 요청시간
     @NotBlank
     @Length(min = 14, max = 14)
-    public String requestDatetime;
+    @DateTimeFormat(pattern = "yyyyMMddHHmmss")
+    public Date requestDatetime;
 }

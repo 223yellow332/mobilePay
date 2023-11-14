@@ -83,24 +83,36 @@ public class Payment extends BaseTimeEntity {
     private Date merchantReqDt;
 
     @Builder
-    public Payment(Merchant merchant, StatusCode authStatus, CarrierName carrierName, long payAmount, String phone
+    public Payment(Merchant merchant, StatusCode statusCode, CarrierName carrierName, long payAmount, String phone
     ,UserInfo userInfo, String merchantTrxid, Date merchantReqDt) {
         this.merchant = merchant;
-        this.statusCode = authStatus;
+        this.statusCode = statusCode;
         this.carrierName = carrierName;
         this.payAmount = payAmount;
         this.phone = phone;
+        this.userInfo = userInfo;
+        this.merchantTrxid = merchantTrxid;
+        this.merchantReqDt = merchantReqDt;
     }
 
-
-
     @Builder(builderMethodName = "certReqBuilder")
-    public Payment(String phone, CarrierName carrierName,
-                   UserInfo userInfo, long payAmount){
+    public Payment(String phone, CarrierName carrierName, StatusCode statusCode,
+                   UserInfo userInfo, long payAmount, String merchantTrxid, Date merchantReqDt){
         this.phone = phone;
         this.carrierName = carrierName;
+        this.statusCode = statusCode;
         this.userInfo = userInfo;
         this.payAmount = payAmount;
+        this.merchantTrxid = merchantTrxid;
+        this.merchantReqDt = merchantReqDt;
+    }
+
+    public void setStatusCode(StatusCode statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public void setMerchant(Merchant merchant) {
+        this.merchant = merchant;
     }
 
 }

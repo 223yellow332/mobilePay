@@ -41,7 +41,7 @@ class PaymentRepositoryTest {
 
         Payment payment = paymentRepository.save(Payment.builder()
                         .merchant(merchant)
-                        .authStatus(StatusCode.AUTH_READY)
+                        .statusCode(StatusCode.AUTH_READY)
                         .carrierName(CarrierName.KT)
                         .payAmount(24000L)
                         .phone("01012344885")
