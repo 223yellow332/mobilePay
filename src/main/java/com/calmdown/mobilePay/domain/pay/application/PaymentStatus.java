@@ -26,7 +26,7 @@ public class PaymentStatus {
         log.info("PaymentCertRequestDto => " + request.toString());
 
         // 가맹점 ID 유효성 검증
-        Merchant merchant = merchantService.findById(request.getMeerchantId());
+        Merchant merchant = merchantService.findById(request.getMerchantId());
 
         // Payment 객체 생성
         Payment payment = request.toEntity();
@@ -58,7 +58,7 @@ public class PaymentStatus {
         log.info("PaymentCertRequestDto => " + request.toString());
 
         // 가맹점 ID 유효성 검증
-        Merchant merchant = merchantService.findById(request.getMeerchantId());
+        Merchant merchant = merchantService.findById(request.getMerchantId());
 
         // Payment 거래 내역 조회
 
@@ -75,7 +75,7 @@ public class PaymentStatus {
         log.info("PaymentCertRequestDto => " + request.toString());
 
         // 가맹점 ID 유효성 검증
-        Merchant merchant = merchantService.findById(request.getMeerchantId());
+        Merchant merchant = merchantService.findById(request.getMerchantId());
         
         // Payment 거래 내역 조회
 
@@ -84,9 +84,9 @@ public class PaymentStatus {
         // Payment 거래 상태 변경
 
         return AuthResponseDto.builder()
-                .transactionId(request.getTransactionId())
+                .transactionId(request.getMerchantTrxid())
                 .limitAmount(10000L)
-                .payAmount(request.getPayAmount())
+                .payAmount(request.getAmount())
                 .build();
     }
 
@@ -97,7 +97,7 @@ public class PaymentStatus {
         log.info("PaymentCertRequestDto => " + request.toString());
 
         // 가맹점 ID 유효성 검증
-        Merchant merchant = merchantService.findById(request.getMeerchantId());
+        Merchant merchant = merchantService.findById(request.getMerchantId());
 
         // Payment 거래 내역 조회
 
@@ -109,7 +109,7 @@ public class PaymentStatus {
 
         return CancelResponseDto.builder()
                 .transactionId(request.getTransactionId())
-                .cancelAmount(request.getCancelAmount())
+                .cancelAmount(request.getAmount())
                 .build();
     }
 }

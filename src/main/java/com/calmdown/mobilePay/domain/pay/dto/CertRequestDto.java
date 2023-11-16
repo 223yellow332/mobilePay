@@ -4,7 +4,6 @@ import com.calmdown.mobilePay.domain.pay.StatusCode;
 import com.calmdown.mobilePay.domain.pay.entity.CarrierName;
 import com.calmdown.mobilePay.domain.pay.entity.Payment;
 import com.calmdown.mobilePay.domain.pay.entity.UserInfo;
-import com.calmdown.mobilePay.global.dto.MobilePayMessageHeader;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -13,6 +12,9 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 /*
  * 가맹점 인증 요청
@@ -21,9 +23,28 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 @ToString(callSuper = true)
 @SuperBuilder
-public class CertRequestDto extends MobilePayMessageHeader {
+public class CertRequestDto {
 
+    /**
+     * Header
+     * */
+    // 가맹점ID
+    public Long merchantId;
 
+    // 가맹점 주문id
+    @NotBlank
+    @Length(max = 20)
+    public String merchantTrxid;
+
+    // 요청시간 -> 인증때만
+    @NotBlank
+    @Length(min = 14, max = 14)
+    @DateTimeFormat(pattern = "yyyyMMddHHmmss")
+    public Date requestDatetime;
+
+    /**
+     * Body
+     * */
     //휴대전화번호
     @NotBlank
     @Length(max = 11, message = "전화번호 길이 오류")

@@ -1,7 +1,7 @@
 package com.calmdown.mobilePay.domain.pay.dto;
 
-import com.calmdown.mobilePay.global.dto.MobilePayMessageHeader;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -12,7 +12,16 @@ import org.hibernate.validator.constraints.Length;
 @Getter
 @ToString(callSuper = true)
 @SuperBuilder
-public class CancelRequestDto extends MobilePayMessageHeader {
+public class CancelRequestDto {
+
+    // 가맹점ID
+    @NotNull
+    public Long merchantId;
+
+/*    // 가맹점 주문id
+    @NotBlank
+    @Length(max = 20)
+    public String merchantTrxid;*/
 
     //TRANSACTION_ID
     @NotBlank
@@ -21,5 +30,5 @@ public class CancelRequestDto extends MobilePayMessageHeader {
     //취소금액
     @NotBlank
     @Length(max = 10)
-    public Long cancelAmount;
+    public Long amount;
 }
