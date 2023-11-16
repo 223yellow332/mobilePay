@@ -5,6 +5,7 @@ import com.calmdown.mobilePay.domain.pay.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -20,7 +21,7 @@ public class PaymentApiController {
      * 인증
      */
     @PostMapping("/api/cert")
-    public ResponseEntity<CertResponseDto> cert(@RequestBody CertRequestDto certRequest) throws ParseException {
+    public ResponseEntity<CertResponseDto> cert(@Validated  @RequestBody CertRequestDto certRequest) throws ParseException {
         return new ResponseEntity<>(paymentStatus.cert(certRequest), HttpStatus.OK);
     }
 

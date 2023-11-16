@@ -26,8 +26,8 @@ public abstract class MobilePayMessageHeader {
     public String merchantTrxid;
 
     // 요청시간
-    @NotBlank
-    @Length(min = 14, max = 14)
-    @DateTimeFormat(pattern = "yyyyMMddHHmmss")
+//    @NotBlank
+//    @Length(min = 14, max = 14)
+    @DateTimeFormat(pattern = "yyyyMMddhhmmss")
     public Date requestDatetime;
 }
