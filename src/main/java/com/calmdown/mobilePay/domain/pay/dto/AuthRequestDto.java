@@ -29,5 +29,5 @@ public class AuthRequestDto {
     //결제금액
     @NotBlank
     @Length(max = 10)
-    public Long amount;
+    public Long authAmount;
 }

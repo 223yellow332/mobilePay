@@ -17,9 +17,6 @@ import java.util.Date;
 @SuperBuilder
 public class SmsCheckRequestDto {
 
-    /**
-     * Header
-     * */
     // 가맹점ID
     @NotNull
     public Long merchantId;
@@ -28,10 +25,7 @@ public class SmsCheckRequestDto {
     @NotBlank
     @Length(max = 20)
     public String merchantTrxid;
-
-    /**
-     * Body
-     * */
+    
     //TRANSACTION_ID
     @NotBlank
     public String transactionId;

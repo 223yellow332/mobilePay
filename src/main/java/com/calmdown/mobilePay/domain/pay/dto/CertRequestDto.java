@@ -25,9 +25,6 @@ import java.util.Date;
 @SuperBuilder
 public class CertRequestDto {
 
-    /**
-     * Header
-     * */
     // 가맹점ID
     public Long merchantId;
 
@@ -42,9 +39,6 @@ public class CertRequestDto {
     @DateTimeFormat(pattern = "yyyyMMddHHmmss")
     public Date requestDatetime;
 
-    /**
-     * Body
-     * */
     //휴대전화번호
     @NotBlank
     @Length(max = 11, message = "전화번호 길이 오류")
@@ -85,6 +79,7 @@ public class CertRequestDto {
         return Payment.certReqBuilder()
                 .carrierName(CarrierName.valueOfStr(mobileCarrier))
                 .statusCode(StatusCode.CERT_READY)
+                .merchantReqDt(requestDatetime)
                 .payAmount(payAmount)
                 .phone(phone)
                 .userInfo(UserInfo.builder()

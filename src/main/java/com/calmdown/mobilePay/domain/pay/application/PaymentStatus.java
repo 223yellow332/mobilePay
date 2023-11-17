@@ -86,7 +86,7 @@ public class PaymentStatus {
         return AuthResponseDto.builder()
                 .transactionId(request.getMerchantTrxid())
                 .limitAmount(10000L)
-                .payAmount(request.getAmount())
+                .payAmount(request.getAuthAmount())
                 .build();
     }
 
@@ -109,7 +109,7 @@ public class PaymentStatus {
 
         return CancelResponseDto.builder()
                 .transactionId(request.getTransactionId())
-                .cancelAmount(request.getAmount())
+                .cancelAmount(request.getCancelAmount())
                 .build();
     }
 }

@@ -32,10 +32,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  */
 
-/*@MockBean(JpaMetamodelMappingContext.class)
-@WebMvcTest(PaymentApi.class)*/
+@MockBean(JpaMetamodelMappingContext.class)
+@WebMvcTest(PaymentApiController.class)
 class PaymentApiTest {
-/*
+
 
     @Autowired
     MockMvc mvc;
@@ -51,7 +51,7 @@ class PaymentApiTest {
         CertRequestDto request = CertRequestDto.builder()
                 .merchantId(1L)
                 .merchantTrxid("TEST_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")))
-                .requestDatetime(Date.valueOf("20231112125959"))
+                //.requestDatetime(Date.valueOf("20231112125959"))
                 .phone("01012344885")
                 .mobileCarrier(CarrierName.KT.str())
                 .socialNumber("19881215")
@@ -60,12 +60,19 @@ class PaymentApiTest {
                 .payAmount(15000L)
                 .build();
 
-        CertResponseDto response = CertResponseDto.builder()
+/*        CertResponseDto response = CertResponseDto.builder()
                 .merchantId(1L)
                 .merchantTrxid("TEST_"+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")))
                 .requestDatetime(Date.valueOf("20231112125959"))
                 .resultCode("0")
                 .resultMsg("성공")
+                .transactionId("1")
+                .payAmount(15000L)
+                .limitAmount(240000L)
+                .payDateTime("20231112125959")
+                .build();*/
+
+        CertResponseDto response = CertResponseDto.builder()
                 .transactionId("1")
                 .payAmount(15000L)
                 .limitAmount(240000L)
@@ -77,10 +84,9 @@ class PaymentApiTest {
         mvc.perform(post("/payment/cert")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                //.andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print()) // 받은 결과 출력
                 ;
     }
-*/
 
 }

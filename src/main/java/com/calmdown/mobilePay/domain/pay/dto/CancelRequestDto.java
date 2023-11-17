@@ -30,5 +30,5 @@ public class CancelRequestDto {
     //취소금액
     @NotBlank
     @Length(max = 10)
-    public Long amount;
+    public Long cancelAmount;
 }
