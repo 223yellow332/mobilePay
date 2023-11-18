@@ -3,6 +3,7 @@ package com.calmdown.mobilePay.domain.pay.entity;
 import com.calmdown.mobilePay.domain.model.BaseTimeEntity;
 import com.calmdown.mobilePay.domain.pay.StatusCode;
 import jakarta.persistence.*;
+import lombok.Builder;
 
 @Entity
 public class SmsCheck extends BaseTimeEntity {
@@ -25,6 +26,16 @@ public class SmsCheck extends BaseTimeEntity {
     //SMS 인증번호
     @Column(name="sms_auth_number")
     private String smsAuthNumber;
+
+
+    @Builder(builderMethodName = "saveSmsSendingInfo")
+    public SmsCheck(Payment payment, StatusCode statusCode, String code){
+        this.payment = payment;
+        this.smsCheckStatus = statusCode;
+        this.smsAuthNumber = code;
+    }
+
+
 
 
 }

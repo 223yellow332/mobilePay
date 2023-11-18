@@ -51,7 +51,7 @@ class PaymentApiTest {
         CertRequestDto request = CertRequestDto.builder()
                 .merchantId(1L)
                 .merchantTrxid("TEST_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")))
-                //.requestDatetime(Date.valueOf("20231112125959"))
+//                .requestDatetime(Date.valueOf("20231112125959"))
                 .phone("01012344885")
                 .mobileCarrier(CarrierName.KT.str())
                 .socialNumber("19881215")

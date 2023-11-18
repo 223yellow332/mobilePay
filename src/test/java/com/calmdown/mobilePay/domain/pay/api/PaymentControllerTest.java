@@ -28,26 +28,14 @@ public class PaymentControllerTest {
 
 
     @Test
-    @DisplayName("가맹점 인증 요청 수신 후 결제 정보 조회")
+    @DisplayName("인증")
     void certTest(){
-        //given
-//        long id = 1;
-//        String phone = "01012344885";
-//        PaymentCertRequestDto paymentCertRequestDto = PaymentCertRequestDto.builder()
-//                .id(id)
-//                .phone(phone)
-//                .build();
-//
-//        String url = "http://localhost:" + port + "/api/cert";
 
-        //paymentRepository.save(payment);
+        //given
 
         //when
 
-/*
-        Payment payment = paymentRepository.findById(requestDto.toEntity().getId())
-                .orElseThrow(() -> new IllegalArgumentException());
-*/
+
 
         //then
         System.out.println("성공");

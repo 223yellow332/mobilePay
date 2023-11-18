@@ -58,6 +58,11 @@ public class CertRequestDto {
     @Length(min = 1, max = 1)
     public String gender;
 
+    //결제금액
+    @Min(100l)
+    @Max(1000000l)
+    public Long payAmount;
+
     //이름
     @Length(max = 20)
     public String userName;
@@ -66,16 +71,11 @@ public class CertRequestDto {
     @Length(max = 126)
     public String email;
 
-    //결제금액
-    @Min(100l)
-    @Max(1000000l)
-    public Long payAmount;
-
     //상품명
     @Length(max = 126)
     public String itemName;
 
-    public Payment toEntity(){
+    public Payment toEntityCertReq(){
         return Payment.certReqBuilder()
                 .carrierName(CarrierName.valueOfStr(mobileCarrier))
                 .statusCode(StatusCode.CERT_READY)
@@ -91,4 +91,6 @@ public class CertRequestDto {
                 .merchantReqDt(requestDatetime)
                 .build();
     }
+
+
 }
