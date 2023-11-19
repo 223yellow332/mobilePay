@@ -31,7 +31,7 @@ public class PaymentApiController {
      * SMS 인증번호 확인
      */
     @PostMapping("/api/smsCheck")
-    public ResponseEntity<SmsCheckResponseDto> smsCheck(@RequestBody @Valid SmsCheckRequestDto request) throws ParseException {
+    public ResponseEntity<SmsCheckResponseDto> smsCheck(@RequestBody @Valid SmsCheckRequestDto request){
         return new ResponseEntity<>(paymentStatus.smsCheck(request), HttpStatus.OK);
     }
 
