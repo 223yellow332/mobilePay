@@ -70,9 +70,9 @@ public class Payment extends BaseTimeEntity {
 
     //인증번호
     @Column
-//    private long smsCheckNumber;
-    private String smsCheckNumber;
-
+    //private String smsCheckNumber;
+    private String smsAuthNumber;
+    //private long smsCheckNumber;
 
     //Embedded: 상세 고객 정보 (고객이름, 생년월일, 성별, Email)
     @Embedded

@@ -120,7 +120,7 @@ public class PaymentStatus {
         Payment payment = paymentService.checkPaymentIdStatus(request.getTransactionId(), StatusCode.CERT_SUCCESS, merchant);
 
         // 인증번호 확인
-        if(payment.getSmsCheckNumber() != request.smsAuthNumber)
+        if(payment.getSmsAuthNumber() != request.smsAuthNumber)
             throw new UserException(CommonErrorCode.SMS_CHECK_NUMBER_MISMATCH);
 
         return SmsCheckResponseDto.builder()
