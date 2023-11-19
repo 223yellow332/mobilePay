@@ -2,8 +2,10 @@ package com.calmdown.mobilePay.global.dto;
 
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
+@ToString
 @NoArgsConstructor
 @SuperBuilder
 public abstract class MobilePayResposeMessage {

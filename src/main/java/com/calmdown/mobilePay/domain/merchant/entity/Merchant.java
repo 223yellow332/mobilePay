@@ -31,13 +31,13 @@ public class Merchant {
     private ProgressCode progressCode;
 
     @Column(columnDefinition = "bigint default 1", nullable = false)
-    private long maxSmsCount;
+    private int maxSmsCount;
 
     @Column(length = 50)
     private String category;
 
     @Builder
-    public Merchant(String merchantName, ProgressCode progressCode, long maxSmsCount, String category) {
+    public Merchant(String merchantName, ProgressCode progressCode, int maxSmsCount, String category) {
         this.merchantName = merchantName;
         this.progressCode = progressCode;
         this.maxSmsCount = maxSmsCount;

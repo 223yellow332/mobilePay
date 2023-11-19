@@ -32,6 +32,7 @@ public class PaymentStatus {
     private final MerchantService merchantService;
     private final SmsCheckService smsCheckService;
 
+
     private final SmsSendUtil smsSendUtil;
 
     /*
@@ -73,7 +74,7 @@ public class PaymentStatus {
         SmsCheckRequestDto smsSendRequest = new SmsCheckRequestDto();
         SmsCheck smsCheck = smsSendRequest.toEntitySendSmsReq(randomNum);
 
-        smsCheckService.save(smsCheck);
+        smsCheckService.saveSmsInfo(smsCheck);
 
         return CertResponseDto.builder()
                 .transactionId(String.valueOf(savePayment.getId()))
@@ -111,44 +112,74 @@ public class PaymentStatus {
      * SMS 인증번호 확인
      */
     public SmsCheckResponseDto smsCheck(SmsCheckRequestDto request){
-        log.info("PaymentCertRequestDto => " + request.toString());
+        log.info("[{}] PaymentSmsCheck => {}", request.getTransactionId(), request.toString());
 
         // 가맹점 ID 유효성 검증
-        Merchant merchant = merchantService.findById(request.getMerchantId());
+        Merchant merchant = merchantService.findById(Long.valueOf(request.getMerchantId()));
 
         // Payment 거래 내역 조회 (인증 성공)
-        Payment payment = paymentService.checkPaymentIdStatus(request.getTransactionId(), StatusCode.CERT_SUCCESS, merchant);
+        Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getTransactionId()), StatusCode.CERT_SUCCESS, merchant);
+
+        log.info("[{}] PaymentSmsCheck 최대 인증 횟수 {}, 이전 인증 횟수 {}", request.getTransactionId(),
+                    merchant.getMaxSmsCount(), payment.getSmsChecks().size());
+        // 인증번호 확인 최대 횟수 초과했는지 체크
+        if(merchant.getMaxSmsCount() <= payment.getSmsChecks().size()) {
+            throw new UserException(CommonErrorCode.SMS_CHECK_NUMBER_OVER_REQUEST);
+        }
 
         // 인증번호 확인
-        if(payment.getSmsAuthNumber() != request.smsAuthNumber)
+        SmsCheck smsCheck = smsCheckService.save(request, payment);
+        if(smsCheck.getSmsCheckStatus().equals(StatusCode.SMS_CHECK_FAILURE)) {
+            log.info("[{}] PaymentSmsCheck 인증 번호 {}, 요청 인증 번호 {}", request.getTransactionId(),
+                    payment.getSmsCheckNumber(), request.getSmsAuthNumber());
             throw new UserException(CommonErrorCode.SMS_CHECK_NUMBER_MISMATCH);
+        }
 
-        return SmsCheckResponseDto.builder()
-                .resultCode("0")
+        SmsCheckResponseDto response = SmsCheckResponseDto.builder()
+                .resultCode(CommonErrorCode.SUCCESS.name())
                 .resultMsg(CommonErrorCode.SUCCESS.getMessage())
                 .build();
+
+        log.info("[{}] PaymentSmsCheck => {}", request.getTransactionId(), response.toString());
+        return response;
     }
 
     /*
      * 승인
      */
     public AuthResponseDto auth(AuthRequestDto request) throws ParseException {
-        log.info("PaymentCertRequestDto => " + request.toString());
+        log.info("[{}] PaymentAuth => {}", request.getTransactionId(), request.toString());
 
         // 가맹점 ID 유효성 검증
-        Merchant merchant = merchantService.findById(request.getMerchantId());
-        
-        // Payment 거래 내역 조회
+        Merchant merchant = merchantService.findById(Long.valueOf(request.getMerchantId()));
+
+        // Payment 거래 내역 조회 (인증 성공)
+        Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getTransactionId()), StatusCode.CERT_SUCCESS, merchant);
+
+        // SMS 인증번호 완료된 거래만 결제 가능
+        StatusCode smCheckResult = payment.getSmsChecks().stream()
+                .map(SmsCheck::getSmsCheckStatus)
+                .filter(x -> x.equals(StatusCode.SMS_CHECK_SUCCESS))
+                .findFirst()
+                .orElseThrow(() -> new UserException(CommonErrorCode.INVALID_AUTH_STATUS_SMS_CHECK));
 
         // gw 통신
         
         // Payment 거래 상태 변경
+        payment.setStatusCode(StatusCode.AUTH_SUCCESS);
+        paymentService.save(payment);
 
-        return AuthResponseDto.builder()
-                .transactionId(request.getMerchantTrxid())
+        AuthResponseDto response = AuthResponseDto.builder()
+                .resultCode(CommonErrorCode.SUCCESS.name())
+                .resultMsg(CommonErrorCode.SUCCESS.getMessage())
+                .transactionId(request.getTransactionId())
                 .limitAmount(10000L)
-                .payAmount(request.getAuthAmount())
-                .build();
+                .payAmount(request.getAmount())
+                .build()
+                ;
+
+        log.info("[{}] PaymentAuth => {}", request.getTransactionId(), response.toString());
+        return response;
     }
 
     /*
