@@ -1,5 +1,7 @@
 package com.calmdown.mobilePay.domain.pay.dto;
 
+import com.calmdown.mobilePay.domain.pay.StatusCode;
+import com.calmdown.mobilePay.domain.pay.entity.SmsCheck;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -21,17 +23,23 @@ public class SmsCheckRequestDto {
     @NotNull
     public Long merchantId;
 
-    // 가맹점 주문id
-    @NotBlank
-    @Length(max = 20)
-    public String merchantTrxid;
-    
     //TRANSACTION_ID
-    @NotBlank
-    public String transactionId;
+    @NotNull
+    public Long transactionId;
 
     //인증번호
+    @NotNull
+    public Long smsAuthNumber;
+
+/*    //인증번호 [String]
     @NotBlank
-    public String smsAuthNumber;
+    public String smsAuthNumber;*/
+
+    public SmsCheck toEntitySendSmsReq(){
+        return SmsCheck.smsSendingBuilder()
+                .statusCode(StatusCode.SMS_CHECK_SUCCESS)
+                .smsAuthNumber(smsAuthNumber)
+                .build();
+    }
 
 }

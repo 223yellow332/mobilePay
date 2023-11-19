@@ -27,7 +27,7 @@ public class Merchant {
     @Column(length = 50, nullable = false)
     private  String merchantName;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private ProgressCode progressCode;
 
     @Column(columnDefinition = "bigint default 1", nullable = false)

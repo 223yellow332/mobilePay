@@ -3,15 +3,20 @@ package com.calmdown.mobilePay.domain.pay.application;
 import com.calmdown.mobilePay.domain.merchant.application.MerchantService;
 import com.calmdown.mobilePay.domain.merchant.entity.Merchant;
 import com.calmdown.mobilePay.domain.model.ResultCode;
+
 import com.calmdown.mobilePay.domain.pay.StatusCode;
 import com.calmdown.mobilePay.domain.pay.dto.*;
 import com.calmdown.mobilePay.domain.pay.entity.Payment;
 import com.calmdown.mobilePay.domain.pay.entity.SmsCheck;
 import com.calmdown.mobilePay.global.dto.MobilePayResposeMessage;
 import com.calmdown.mobilePay.global.infra.SmsSendUtil;
+import com.calmdown.mobilePay.global.exception.errorCode.CommonErrorCode;
+import com.calmdown.mobilePay.global.exception.exception.UserException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.nurigo.sdk.message.model.Message;
+import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -27,13 +32,12 @@ public class PaymentStatus {
     private final MerchantService merchantService;
     private final SmsCheckService smsCheckService;
 
-
-    private SmsSendUtil smsSendUtil;
+    private final SmsSendUtil smsSendUtil;
 
     /*
      * 인증
      */
-    public CertResponseDto cert(CertRequestDto request) throws ParseException {
+    public CertResponseDto cert(CertRequestDto request) throws Exception {
         log.info("PaymentCertRequestDto => " + request.toString());
 
         // 가맹점 ID 유효성 검증
@@ -58,17 +62,23 @@ public class PaymentStatus {
             payment.setStatusCode(StatusCode.CERT_FAILURE);
             paymentService.save(payment);
             //예외처리
+            throw new Exception("통신사 응답 결과: 통신 실패");
         }
 
+        SmsCheckRequestDto smsSendRequest = new SmsCheckRequestDto();
+        SmsCheck smsCheck = smsSendRequest.toEntitySendSmsReq();
 
+        // sms발송 (인증번호 난수 생성)
         String randomNum = createRandomNumber();
-        // sms발송(인증번호 난수 생성)
-        sendSms(request, randomNum);
+        String smsApiResponse = sendSms(request, randomNum);
 
-        SmsCheck smsCheck = new SmsCheckResponseDto();
-
-        SmsCheck saveSmsSendInfo = smsCheckService.save(smsCheck);
-
+        //SMS API 전송 성공 코드(2000)
+        //SMS 발송 내역 Insert (Save)
+        if("2000".equals(smsApiResponse)){
+            smsCheckService.save(smsCheck);
+        }else{
+            throw new Exception("SMS 전송 실패");
+        }
 
         return CertResponseDto.builder()
                 .transactionId(String.valueOf(savePayment.getId()))
@@ -78,15 +88,15 @@ public class PaymentStatus {
     }
 
     /*
-     * SMS API test
+     * SMS API
      * */
-    public ResponseEntity<ResultCode> sendSms(CertRequestDto request, String code){
+    public String sendSms(CertRequestDto request, String code){
         String phoneNum = request.getPhone();
         String verificationCode = code;
 
-        smsSendUtil.sendOne(phoneNum, verificationCode);
+        SingleMessageSentResponse smsApiResponse = smsSendUtil.sendOne(phoneNum, verificationCode);
 
-        return ResponseEntity.ok(ResultCode.SUCCESS);
+        return smsApiResponse.getStatusCode();
     }
 
     public String createRandomNumber(){
@@ -100,21 +110,25 @@ public class PaymentStatus {
         return code;
     }
 
-
     /*
      * SMS 인증번호 확인
      */
-    public SmsCheckResponseDto smsCheck(SmsCheckRequestDto request) throws ParseException {
+    public SmsCheckResponseDto smsCheck(SmsCheckRequestDto request){
         log.info("PaymentCertRequestDto => " + request.toString());
 
         // 가맹점 ID 유효성 검증
         Merchant merchant = merchantService.findById(request.getMerchantId());
 
-        // Payment 거래 내역 조회
+        // Payment 거래 내역 조회 (인증 성공)
+        Payment payment = paymentService.checkPaymentIdStatus(request.getTransactionId(), StatusCode.CERT_SUCCESS, merchant);
 
         // 인증번호 확인
+        if(payment.getSmsCheckNumber() != request.smsAuthNumber)
+            throw new UserException(CommonErrorCode.SMS_CHECK_NUMBER_MISMATCH);
 
         return SmsCheckResponseDto.builder()
+                .resultCode("0")
+                .resultMsg(CommonErrorCode.SUCCESS.getMessage())
                 .build();
     }
 
