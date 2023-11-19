@@ -28,6 +28,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // 사용자 정의 에러코드 처리
     @ExceptionHandler(UserException.class)
     public ResponseEntity<Object> handleCustomException(UserException e) {
+        log.warn("handleUserException", e);
         return handleExceptionInternal(e.getErrorCode());
     }
 

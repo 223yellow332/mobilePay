@@ -1,5 +1,6 @@
 package com.calmdown.mobilePay.domain.pay.dto;
 
+import com.calmdown.mobilePay.domain.merchant.entity.Merchant;
 import com.calmdown.mobilePay.domain.pay.StatusCode;
 import com.calmdown.mobilePay.domain.pay.entity.CarrierName;
 import com.calmdown.mobilePay.domain.pay.entity.Payment;
@@ -37,8 +38,7 @@ public class CertRequestDto {
     public String merchantTrxid;
 
     // 요청시간 -> 인증때만
-    @NotBlank
-    @Length(min = 14, max = 14)
+//    @Length(min = 14, max = 14)
     @DateTimeFormat(pattern = "yyyyMMddHHmmss")
     public Date requestDatetime;
 

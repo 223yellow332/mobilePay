@@ -2,9 +2,12 @@ package com.calmdown.mobilePay.domain.pay.application;
 
 import com.calmdown.mobilePay.domain.merchant.application.MerchantService;
 import com.calmdown.mobilePay.domain.merchant.entity.Merchant;
+import com.calmdown.mobilePay.domain.pay.StatusCode;
 import com.calmdown.mobilePay.domain.pay.dto.*;
 import com.calmdown.mobilePay.domain.pay.entity.Payment;
 import com.calmdown.mobilePay.global.dto.MobilePayResposeMessage;
+import com.calmdown.mobilePay.global.exception.errorCode.CommonErrorCode;
+import com.calmdown.mobilePay.global.exception.exception.UserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -54,17 +57,22 @@ public class PaymentStatus {
     /*
      * SMS 인증번호 확인
      */
-    public SmsCheckResponseDto smsCheck(SmsCheckRequestDto request) throws ParseException {
+    public SmsCheckResponseDto smsCheck(SmsCheckRequestDto request){
         log.info("PaymentCertRequestDto => " + request.toString());
 
         // 가맹점 ID 유효성 검증
         Merchant merchant = merchantService.findById(request.getMerchantId());
 
-        // Payment 거래 내역 조회
+        // Payment 거래 내역 조회 (인증 성공)
+        Payment payment = paymentService.checkPaymentIdStatus(request.getTransactionId(), StatusCode.CERT_SUCCESS, merchant);
 
         // 인증번호 확인
+        if(payment.getSmsCheckNumber() != request.smsAuthNumber)
+            throw new UserException(CommonErrorCode.SMS_CHECK_NUMBER_MISMATCH);
 
         return SmsCheckResponseDto.builder()
+                .resultCode("0")
+                .resultMsg(CommonErrorCode.SUCCESS.getMessage())
                 .build();
     }
 

@@ -1,4 +1,3 @@
-
 package com.calmdown.mobilePay.domain.pay.api;
 
 import com.calmdown.mobilePay.domain.pay.application.PaymentStatus;
@@ -17,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -25,17 +25,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-/*
- * @MockBean(JpaMetamodelMappingContext.class)
- * @WebMvcTest는 JPA생성과 관련된 작업을 진행하지 않습니다.
- * 하지만 MobilePayApplication에서 @EnableJpaAuditing를 선언하였기에 "JPA metamodel must not be empty" 오류가 발생합니다.
- *
- */
-
-/*@MockBean(JpaMetamodelMappingContext.class)
-@WebMvcTest(PaymentApi.class)*/
-class PaymentApiTest {
-/*
+@MockBean(JpaMetamodelMappingContext.class)
+@WebMvcTest(PaymentApiController.class)
+public class PaymentApiControllerTest {
 
     @Autowired
     MockMvc mvc;
@@ -51,7 +43,7 @@ class PaymentApiTest {
         CertRequestDto request = CertRequestDto.builder()
                 .merchantId(1L)
                 .merchantTrxid("TEST_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")))
-                .requestDatetime(Date.valueOf("20231112125959"))
+//                .requestDatetime(Date.valueOf("20231119132525"))
                 .phone("01012344885")
                 .mobileCarrier(CarrierName.KT.str())
                 .socialNumber("19881215")
@@ -61,9 +53,6 @@ class PaymentApiTest {
                 .build();
 
         CertResponseDto response = CertResponseDto.builder()
-                .merchantId(1L)
-                .merchantTrxid("TEST_"+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")))
-                .requestDatetime(Date.valueOf("20231112125959"))
                 .resultCode("0")
                 .resultMsg("성공")
                 .transactionId("1")
@@ -74,13 +63,11 @@ class PaymentApiTest {
 
         given(paymentStatus.cert(request)).willReturn(response);
 
-        mvc.perform(post("/payment/cert")
+        mvc.perform(post("/api/cert")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print()) // 받은 결과 출력
-                ;
+        ;
     }
-*/
-
 }

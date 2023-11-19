@@ -24,20 +24,15 @@ public class SmsCheckRequestDto {
     @NotNull
     public Long merchantId;
 
-    // 가맹점 주문id
-    @NotBlank
-    @Length(max = 20)
-    public String merchantTrxid;
-
     /**
      * Body
      * */
     //TRANSACTION_ID
-    @NotBlank
-    public String transactionId;
+    @NotNull
+    public Long transactionId;
 
     //인증번호
-    @NotBlank
-    public String smsAuthNumber;
+    @NotNull
+    public Long smsAuthNumber;
 
 }
