@@ -28,16 +28,11 @@ public class Payment extends BaseTimeEntity {
     @Column(name="payment_id")
     private long id;
 
-    @OneToOne
+    //가맹점 ID
+    //결제(N) : 가맹점(1)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "merchant_id")
     private Merchant merchant;
-
-/*    //가맹점 ID
-    //결제(N) : 가맹점(1)
-    //@ManyToOne(fetch = FetchType.LAZY)
-    @Column(name="merchant_id")
-    @JoinColumn(name = "merchant_id")
-    private long merchantId;*/
 
     //결제(1) : 취소(N)
     @OneToMany(mappedBy = "payment")
@@ -70,7 +65,7 @@ public class Payment extends BaseTimeEntity {
 
     //인증번호
     @Column
-    private long smsCheckNumber;
+    private String smsAuthNumber;
 
     //Embedded: 상세 고객 정보 (고객이름, 생년월일, 성별, Email)
     @Embedded
