@@ -29,7 +29,17 @@ public class SmsCheck extends BaseTimeEntity {
 
     //SMS 인증번호
     @Column(name="sms_auth_number")
-    private String smsAuthNumber;
+    private Long smsAuthNumber;
+    //private String smsAuthNumber;
+
+    //cert 시 최초 저장
+    @Builder(builderMethodName = "smsSendingBuilder")
+    public SmsCheck(StatusCode statusCode, Long smsAuthNumber){
+        this.smsCheckStatus = statusCode;
+        this.smsAuthNumber = smsAuthNumber;
+    }
+
+
 
     @Builder
     public SmsCheck(Payment payment, StatusCode smsCheckStatus, String smsAuthNumber) {
