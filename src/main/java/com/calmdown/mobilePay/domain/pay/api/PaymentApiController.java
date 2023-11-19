@@ -23,7 +23,7 @@ public class PaymentApiController {
      * 인증
      */
     @PostMapping("/api/cert")
-    public ResponseEntity<CertResponseDto> cert(@RequestBody @Valid CertRequestDto certRequest) throws ParseException {
+    public ResponseEntity<CertResponseDto> cert(@RequestBody @Valid CertRequestDto certRequest) throws Exception {
         return new ResponseEntity<>(paymentStatus.cert(certRequest), HttpStatus.OK);
     }
 
