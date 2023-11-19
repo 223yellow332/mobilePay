@@ -27,15 +27,15 @@ public class SmsCheckRequestDto {
     @NotNull
     public Long transactionId;
 
-    //인증번호
+/*    //인증번호
     @NotNull
-    public Long smsAuthNumber;
+    public Long smsAuthNumber;*/
 
-/*    //인증번호 [String]
+    //인증번호 [String]
     @NotBlank
-    public String smsAuthNumber;*/
+    public String smsAuthNumber;
 
-    public SmsCheck toEntitySendSmsReq(){
+    public SmsCheck toEntitySendSmsReq(String smsAuthNumber){
         return SmsCheck.smsSendingBuilder()
                 .statusCode(StatusCode.SMS_CHECK_SUCCESS)
                 .smsAuthNumber(smsAuthNumber)

@@ -20,6 +20,8 @@ public enum CommonErrorCode implements ErrorCode{
     LIMIT_AMOUNT_ERROR(HttpStatus.BAD_REQUEST, "한도 초과입니다."),
     SMS_CHECK_NUMBER_MISMATCH(HttpStatus.BAD_REQUEST, "SMS 인증번호 불일치입니다."),
     MERCHANT_ID_MISMATCH(HttpStatus.BAD_REQUEST, "인증 요청된 가맹점 정보와 다른 요청입니다."),
+    SMS_API_SERVER_ERROR(HttpStatus.BAD_REQUEST, "SMS 전송에 실패했습니다."),
+    MOBILE_CARRIER_SERVER_ERROR(HttpStatus.BAD_REQUEST, "통신사 응답을 받지 못했습니다.")
     ;
 
     private final HttpStatus httpStatus;

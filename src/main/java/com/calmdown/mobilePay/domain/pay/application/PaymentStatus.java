@@ -61,29 +61,26 @@ public class PaymentStatus {
         }else{
             payment.setStatusCode(StatusCode.CERT_FAILURE);
             paymentService.save(payment);
-            //예외처리
-            throw new Exception("통신사 응답 결과: 통신 실패");
+            throw new UserException(CommonErrorCode.MOBILE_CARRIER_SERVER_ERROR);
         }
 
-        SmsCheckRequestDto smsSendRequest = new SmsCheckRequestDto();
-        SmsCheck smsCheck = smsSendRequest.toEntitySendSmsReq();
-
-        // sms발송 (인증번호 난수 생성)
+        // SMS 전송 / 인증번호 난수 생성 후 SMS 전송 Api 호출
         String randomNum = createRandomNumber();
-        String smsApiResponse = sendSms(request, randomNum);
+        sendSms(request, randomNum);
 
         //SMS API 전송 성공 코드(2000)
-        //SMS 발송 내역 Insert (Save)
-        if("2000".equals(smsApiResponse)){
-            smsCheckService.save(smsCheck);
-        }else{
-            throw new Exception("SMS 전송 실패");
-        }
+        //SMS 전송 정보 Save
+        SmsCheckRequestDto smsSendRequest = new SmsCheckRequestDto();
+        SmsCheck smsCheck = smsSendRequest.toEntitySendSmsReq(randomNum);
+
+        smsCheckService.save(smsCheck);
 
         return CertResponseDto.builder()
                 .transactionId(String.valueOf(savePayment.getId()))
                 .limitAmount(10000L)
                 .payAmount(savePayment.getPayAmount())
+                .resultCode(String.valueOf(ResultCode.SUCCESS))
+                .resultMsg(CommonErrorCode.SUCCESS.getMessage())
                 .build();
     }
 
