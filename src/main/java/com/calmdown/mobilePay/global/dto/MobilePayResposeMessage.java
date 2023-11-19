@@ -6,7 +6,7 @@ import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
 @SuperBuilder
-public abstract class MobilePayResposeMessage extends MobilePayMessageHeader{
+public abstract class MobilePayResposeMessage {
 
     // 결과 코드
     public String resultCode;
