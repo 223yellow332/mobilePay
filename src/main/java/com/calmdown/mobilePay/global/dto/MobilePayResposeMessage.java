@@ -1,6 +1,5 @@
 package com.calmdown.mobilePay.global.dto;
 
-import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
@@ -14,5 +13,5 @@ public abstract class MobilePayResposeMessage {
     public String resultCode;
 
     // 결과 메시지
-    public String resultMsg;
+    public String resultMessage;
 }

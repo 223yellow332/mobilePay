@@ -1,6 +1,7 @@
 package com.calmdown.mobilePay.domain.pay.application;
 
 import com.calmdown.mobilePay.domain.merchant.entity.Merchant;
+import com.calmdown.mobilePay.domain.model.ResultCode;
 import com.calmdown.mobilePay.domain.pay.StatusCode;
 import com.calmdown.mobilePay.domain.pay.entity.Payment;
 import com.calmdown.mobilePay.domain.pay.repository.PaymentRepository;
@@ -32,6 +33,12 @@ public class PaymentService {
             new UserException(CommonErrorCode.MERCHANT_ID_MISMATCH);
         
         return payment;
+    }
+
+    @Transactional
+    public Payment updateStatus(Payment payment, StatusCode statusCode) {
+        payment.updateStatus(statusCode);
+        return paymentRepository.save(payment);
     }
 
 }

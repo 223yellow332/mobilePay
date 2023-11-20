@@ -17,11 +17,17 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class SmsCheckRequestDto {
 
+    /**
+     * Header
+     * */
     // 가맹점ID
     @NotBlank
     @Pattern(regexp = "^[0-9]*$", message = "가맹점ID 형식이 잘못되었습니다.")
     public String merchantId;
 
+    /**
+     * Body
+     * */
     //TRANSACTION_ID
     @NotBlank
     @Pattern(regexp = "^[0-9]*$", message = "결제ID 형식이 잘못되었습니다.")
@@ -40,7 +46,6 @@ public class SmsCheckRequestDto {
                 .build()
                 ;
     }
-
 /*  //인증번호
     @NotNull
     public Long smsAuthNumber;*/
@@ -55,5 +60,4 @@ public class SmsCheckRequestDto {
                 .smsCheckNumber(smsCheckNumber)
                 .build();
     }
-
 }

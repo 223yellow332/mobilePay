@@ -9,19 +9,16 @@ import com.calmdown.mobilePay.domain.pay.dto.*;
 import com.calmdown.mobilePay.domain.pay.entity.Cancel;
 import com.calmdown.mobilePay.domain.pay.entity.Payment;
 import com.calmdown.mobilePay.domain.pay.entity.SmsCheck;
-import com.calmdown.mobilePay.global.dto.MobilePayResposeMessage;
 import com.calmdown.mobilePay.global.infra.SmsSendUtil;
 import com.calmdown.mobilePay.global.exception.errorCode.CommonErrorCode;
 import com.calmdown.mobilePay.global.exception.exception.UserException;
 
+import com.calmdown.mobilePay.global.infra.simpleGw.dto.GatewayResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.response.SingleMessageSentResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.util.Random;
 
 @Slf4j
@@ -33,9 +30,6 @@ public class PaymentStatus {
     private final MerchantService merchantService;
     private final SmsCheckService smsCheckService;
     private final CancelService cancelService;
-
-
-
     private final SmsSendUtil smsSendUtil;
 
     /*
@@ -60,10 +54,10 @@ public class PaymentStatus {
         // Payment 거래 상태 변경
         // gw 통신 성공 or 실패
         if(gw != null){
-            payment.setStatusCode(StatusCode.CERT_SUCCESS);
+            payment.updateStatus(StatusCode.CERT_SUCCESS);
             paymentService.save(payment);
         }else{
-            payment.setStatusCode(StatusCode.CERT_FAILURE);
+            payment.updateStatus(StatusCode.CERT_FAILURE);
             paymentService.save(payment);
             throw new UserException(CommonErrorCode.MOBILE_CARRIER_SERVER_ERROR);
         }
@@ -81,7 +75,7 @@ public class PaymentStatus {
                 .limitAmount(10000L)
                 .payAmount(savePayment.getPayAmount())
                 .resultCode(String.valueOf(ResultCode.SUCCESS))
-                .resultMsg(CommonErrorCode.SUCCESS.getMessage())
+                .resultMessage(CommonErrorCode.SUCCESS.getMessage())
                 .build();
     }
 
@@ -112,49 +106,49 @@ public class PaymentStatus {
      * SMS 인증번호 확인
      */
     public SmsCheckResponseDto smsCheck(SmsCheckRequestDto request){
-        log.info("[{}] PaymentSmsCheck => {}", request.getTransactionId(), request.toString());
+        log.info("PaymentCertRequestDto => " + request.toString());
 
         // 가맹점 ID 유효성 검증
         Merchant merchant = merchantService.findById(Long.valueOf(request.getMerchantId()));
 
         // Payment 거래 내역 조회 (인증 성공)
-        Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getTransactionId()), StatusCode.CERT_SUCCESS, merchant);
+        Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getTransactionId()),
+                                                                StatusCode.CERT_SUCCESS, merchant);
 
-        log.info("[{}] PaymentSmsCheck 최대 인증 횟수 {}, 이전 인증 횟수 {}", request.getTransactionId(),
-                    merchant.getMaxSmsCount(), payment.getSmsChecks().size());
         // 인증번호 확인 최대 횟수 초과했는지 체크
         if(merchant.getMaxSmsCount() <= payment.getSmsChecks().size()) {
             throw new UserException(CommonErrorCode.SMS_CHECK_NUMBER_OVER_REQUEST);
         }
 
         // 인증번호 확인
+        log.info("[{}] PaymentSmsCheck 인증 번호 {}, 요청 인증 번호 {}", request.getTransactionId(),
+                payment.getSmsCheckNumber(), request.getSmsCheckNumber());
         SmsCheck smsCheck = smsCheckService.save(request, payment);
         if(smsCheck.getSmsCheckStatus().equals(StatusCode.SMS_CHECK_FAILURE)) {
-            log.info("[{}] PaymentSmsCheck 인증 번호 {}, 요청 인증 번호 {}", request.getTransactionId(),
-                    payment.getSmsCheckNumber(), request.getSmsCheckNumber());
             throw new UserException(CommonErrorCode.SMS_CHECK_NUMBER_MISMATCH);
         }
 
-        SmsCheckResponseDto response = SmsCheckResponseDto.builder()
-                .resultCode(CommonErrorCode.SUCCESS.name())
-                .resultMsg(CommonErrorCode.SUCCESS.getMessage())
+        return SmsCheckResponseDto.builder()
+                .resultCode(CommonErrorCode.SUCCESS.getResultCode())
+                .resultMessage(CommonErrorCode.SUCCESS.getMessage())
                 .build();
-
-        log.info("[{}] PaymentSmsCheck => {}", request.getTransactionId(), response.toString());
-        return response;
     }
 
     /*
      * 승인
      */
-    public AuthResponseDto auth(AuthRequestDto request) throws ParseException {
-        log.info("[{}] PaymentAuth => {}", request.getTransactionId(), request.toString());
+    public AuthResponseDto auth(AuthRequestDto request) {
+        log.info("PaymentCertRequestDto => " + request.toString());
 
         // 가맹점 ID 유효성 검증
         Merchant merchant = merchantService.findById(Long.valueOf(request.getMerchantId()));
+        
+        // Payment 거래 내역 조회
+        Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getTransactionId()),
+                StatusCode.CERT_SUCCESS, merchant);
 
-        // Payment 거래 내역 조회 (인증 성공)
-        Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getTransactionId()), StatusCode.CERT_SUCCESS, merchant);
+        // Payment 거래 상태 변경 (승인대기)
+        paymentService.updateStatus(payment, StatusCode.AUTH_READY);
 
         // SMS 인증번호 완료된 거래만 결제 가능
         StatusCode smCheckResult = payment.getSmsChecks().stream()
@@ -164,14 +158,14 @@ public class PaymentStatus {
                 .orElseThrow(() -> new UserException(CommonErrorCode.INVALID_AUTH_STATUS_SMS_CHECK));
 
         // gw 통신
+        GatewayResponse gwResponse = null;
         
         // Payment 거래 상태 변경
-        payment.setStatusCode(StatusCode.AUTH_SUCCESS);
-        paymentService.save(payment);
+        paymentService.updateStatus(payment, StatusCode.AUTH_SUCCESS);
 
         AuthResponseDto response = AuthResponseDto.builder()
-                .resultCode(CommonErrorCode.SUCCESS.name())
-                .resultMsg(CommonErrorCode.SUCCESS.getMessage())
+                .resultCode(CommonErrorCode.SUCCESS.getResultCode())
+                .resultMessage(CommonErrorCode.SUCCESS.getMessage())
                 .transactionId(request.getTransactionId())
                 .limitAmount(10000L)
                 .payAmount(request.getAmount())
