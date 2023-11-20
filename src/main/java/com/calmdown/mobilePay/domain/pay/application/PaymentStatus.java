@@ -6,6 +6,7 @@ import com.calmdown.mobilePay.domain.model.ResultCode;
 
 import com.calmdown.mobilePay.domain.pay.StatusCode;
 import com.calmdown.mobilePay.domain.pay.dto.*;
+import com.calmdown.mobilePay.domain.pay.entity.Cancel;
 import com.calmdown.mobilePay.domain.pay.entity.Payment;
 import com.calmdown.mobilePay.domain.pay.entity.SmsCheck;
 import com.calmdown.mobilePay.global.dto.MobilePayResposeMessage;
@@ -31,6 +32,8 @@ public class PaymentStatus {
     private final PaymentService paymentService;
     private final MerchantService merchantService;
     private final SmsCheckService smsCheckService;
+    private final CancelService cancelService;
+
 
 
     private final SmsSendUtil smsSendUtil;
@@ -65,16 +68,13 @@ public class PaymentStatus {
             throw new UserException(CommonErrorCode.MOBILE_CARRIER_SERVER_ERROR);
         }
 
-        // SMS 전송 / 인증번호 난수 생성 후 SMS 전송 Api 호출
+        // SMS 전송 / 인증번호 난수 생성 후 SMS 전송 Api 호출 (SMS API 전송 성공 코드:2000)
         String randomNum = createRandomNumber();
         sendSms(request, randomNum);
 
-        //SMS API 전송 성공 코드(2000)
-        //SMS 전송 정보 Save
-        SmsCheckRequestDto smsSendRequest = new SmsCheckRequestDto();
-        SmsCheck smsCheck = smsSendRequest.toEntitySendSmsReq(randomNum);
-
-        smsCheckService.saveSmsInfo(smsCheck);
+        //SMS 인증번호 Save
+        payment.setSmsCheckNumber(randomNum);
+        paymentService.save(payment);
 
         return CertResponseDto.builder()
                 .transactionId(String.valueOf(savePayment.getId()))
@@ -131,7 +131,7 @@ public class PaymentStatus {
         SmsCheck smsCheck = smsCheckService.save(request, payment);
         if(smsCheck.getSmsCheckStatus().equals(StatusCode.SMS_CHECK_FAILURE)) {
             log.info("[{}] PaymentSmsCheck 인증 번호 {}, 요청 인증 번호 {}", request.getTransactionId(),
-                    payment.getSmsCheckNumber(), request.getSmsAuthNumber());
+                    payment.getSmsCheckNumber(), request.getSmsCheckNumber());
             throw new UserException(CommonErrorCode.SMS_CHECK_NUMBER_MISMATCH);
         }
 
@@ -185,19 +185,30 @@ public class PaymentStatus {
     /*
      * 취소
      */
-    public CancelResponseDto cancel(CancelRequestDto request) throws ParseException {
+    public CancelResponseDto cancel(CancelRequestDto request) {
         log.info("PaymentCertRequestDto => " + request.toString());
 
         // 가맹점 ID 유효성 검증
         Merchant merchant = merchantService.findById(request.getMerchantId());
 
-        // Payment 거래 내역 조회
+        // Payment 승인성공(AUTH_SUCCESS) 거래 내역 조회
+        Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getTransactionId()), StatusCode.AUTH_SUCCESS, merchant);
 
-        // 취소 정보 저장
+        //기취소 여부 확인(CANCEL_SUCCESS)
+        if(cancelService.findCancelStatusById(Long.valueOf(request.getTransactionId())) == StatusCode.CANCEL_SUCCESS)
+            throw new UserException(CommonErrorCode.INVALID_CANCEL_STATUS);
+
+        // 취소 정보 저장 (CANCEL_READY)
+        Cancel cancel = request.toEntity(payment);
+        cancelService.save(cancel);
 
         // gw 통신
+        String gw ="";
 
-        // Payment 거래 상태 변경
+        // 사용 가능 한도액 (한도++)
+        // Cancel 테이블 거래 상태 변경 (CANCEL_SUCCESS or CANCEL_FAILURE)
+        cancel.setStatusCode(StatusCode.CANCEL_SUCCESS);
+        cancelService.save(cancel);
 
         return CancelResponseDto.builder()
                 .transactionId(request.getTransactionId())

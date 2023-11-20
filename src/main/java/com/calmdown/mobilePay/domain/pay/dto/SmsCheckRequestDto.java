@@ -30,13 +30,13 @@ public class SmsCheckRequestDto {
     //인증번호
     @NotBlank
     @Pattern(regexp = "^[0-9]*$", message = "SMS 인증번호 형식이 잘못되었습니다.")
-    public String smsAuthNumber;
+    public String smsCheckNumber;
 
     public SmsCheck toEntity(Payment payment, StatusCode smsCheckStatus){
         return SmsCheck.builder()
                 .payment(payment)
                 .smsCheckStatus(smsCheckStatus)
-                .smsAuthNumber(smsAuthNumber)
+                .smsCheckNumber(smsCheckNumber)
                 .build()
                 ;
     }
@@ -49,10 +49,10 @@ public class SmsCheckRequestDto {
 /*    @NotBlank
     public String smsAuthNumber;*/
 
-    public SmsCheck toEntitySendSmsReq(String smsAuthNumber){
+    public SmsCheck toEntitySendSmsReq(String smsCheckNumber){
         return SmsCheck.smsSendingBuilder()
                 .statusCode(StatusCode.SMS_CHECK_SUCCESS)
-                .smsAuthNumber(smsAuthNumber)
+                .smsCheckNumber(smsCheckNumber)
                 .build();
     }
 

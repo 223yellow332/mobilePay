@@ -64,7 +64,7 @@ public class Payment extends BaseTimeEntity {
     private String phone;
 
     //인증번호
-    @Column
+    @Column(name="sms_auth_number")
     private String smsCheckNumber;
 //    private long smsCheckNumber;
 
@@ -112,6 +112,10 @@ public class Payment extends BaseTimeEntity {
 
     public void setMerchant(Merchant merchant) {
         this.merchant = merchant;
+    }
+
+    public void setSmsCheckNumber(String smsCheckNumber) {
+        this.smsCheckNumber = smsCheckNumber;
     }
 
 }
