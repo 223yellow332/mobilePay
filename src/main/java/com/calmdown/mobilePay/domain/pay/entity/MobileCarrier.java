@@ -1,5 +1,6 @@
 package com.calmdown.mobilePay.domain.pay.entity;
 
+import com.calmdown.mobilePay.domain.pay.StatusCode;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -52,5 +53,10 @@ public class MobileCarrier {
         this.carrierReturnCode = carrierReturnCode;
         this.carrierReturnMsg = carrierReturnMsg;
         this.limitAmount = limitAmount;
+    }
+
+    public void updateResult(String carrierReturnCode, String carrierReturnMsg) {
+        this.carrierReturnCode = carrierReturnCode;
+        this.carrierReturnMsg = carrierReturnMsg;
     }
 }

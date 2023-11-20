@@ -15,8 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-import java.sql.Date;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -54,7 +52,7 @@ public class PaymentApiControllerTest {
 
         CertResponseDto response = CertResponseDto.builder()
                 .resultCode("0")
-                .resultMsg("성공")
+                .resultMessage("성공")
                 .transactionId("1")
                 .payAmount(15000L)
                 .limitAmount(240000L)

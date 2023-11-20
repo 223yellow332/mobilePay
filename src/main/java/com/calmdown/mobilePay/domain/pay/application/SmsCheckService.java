@@ -21,7 +21,7 @@ public class SmsCheckService {
         StatusCode smsCheckStatus;
 
         // 인증번호 확인
-        if(payment.getSmsAuthNumber().equals(request.getSmsAuthNumber()))
+        if(payment.getSmsCheckNumber().equals(request.getSmsCheckNumber()))
             smsCheckStatus = StatusCode.SMS_CHECK_SUCCESS;
         else
             smsCheckStatus = StatusCode.SMS_CHECK_FAILURE;
@@ -29,6 +29,10 @@ public class SmsCheckService {
         SmsCheck saveSmsCheck = smsCheckRepository.save(request.toEntity(payment, smsCheckStatus));
 
         return saveSmsCheck;
+    }
+
+    public SmsCheck saveSmsInfo(SmsCheck smsCheck) {
+        return smsCheckRepository.save(smsCheck);
 
     }
 }
