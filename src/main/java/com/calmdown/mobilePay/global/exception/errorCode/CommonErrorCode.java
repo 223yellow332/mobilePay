@@ -23,6 +23,8 @@ public enum CommonErrorCode implements ErrorCode{
     SMS_CHECK_NUMBER_MISMATCH(HttpStatus.BAD_REQUEST, "SMS 인증번호 불일치입니다."),
     INVALID_AUTH_STATUS_SMS_CHECK(HttpStatus.BAD_REQUEST, "승인요청 전 인증번호 확인이 진행되지않았습니다."),
 
+    INVALID_CANCEL_STATUS(HttpStatus.BAD_REQUEST, "취소 가능한 상태가 아닙니다."),
+
     SMS_API_SERVER_ERROR(HttpStatus.BAD_REQUEST, "SMS 전송에 실패했습니다."),
     MOBILE_CARRIER_SERVER_ERROR(HttpStatus.BAD_REQUEST, "통신사 응답을 받지 못했습니다.")
     ;
