@@ -1,5 +1,7 @@
 package com.calmdown.mobilePay.global.infra.simpleGw.dto;
 
+import com.calmdown.mobilePay.domain.pay.entity.MobileCarrier;
+import com.calmdown.mobilePay.domain.pay.entity.Payment;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +16,15 @@ public class SimpleGwResponse implements GatewayResponse{
     private long limitAmount;
     private String resultCode;
     private String resultMessage;
+
+    public MobileCarrier toEntity() {
+        return MobileCarrier.builder()
+                .carrierTrxid(mobileTrxid)
+                .carrierReturnCode(resultCode)
+                .carrierReturnMsg(resultMessage)
+                .limitAmount(limitAmount)
+                .build();
+    }
 
     @Builder
     SimpleGwResponse (String mobileTrxid, Long limitAmount, String resultCode, String resultMessage) {

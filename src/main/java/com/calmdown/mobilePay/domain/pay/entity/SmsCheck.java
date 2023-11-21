@@ -6,7 +6,9 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@ToString
 @NoArgsConstructor
 @Getter
 @Entity
@@ -31,13 +33,6 @@ public class SmsCheck extends BaseTimeEntity {
     @Column(name="sms_check_number")
     //private Long smsCheckNumber;
     private String smsCheckNumber;
-
-    //cert 시 최초 저장
-    @Builder(builderMethodName = "smsSendingBuilder")
-    public SmsCheck(StatusCode statusCode, String smsCheckNumber){
-        this.smsCheckStatus = statusCode;
-        this.smsCheckNumber = smsCheckNumber;
-    }
 
     @Builder
     public SmsCheck(Payment payment, StatusCode smsCheckStatus, String smsCheckNumber) {

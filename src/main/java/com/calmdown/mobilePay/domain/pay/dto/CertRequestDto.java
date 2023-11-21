@@ -75,8 +75,9 @@ public class CertRequestDto {
     @Length(max = 126)
     public String itemName;
 
-    public Payment toEntityCertReq(){
-        return Payment.certReqBuilder()
+    public Payment toEntityCertReq(Merchant merchant){
+        return Payment.builder()
+                .merchant(merchant)
                 .carrierName(CarrierName.valueOfStr(mobileCarrier))
                 .statusCode(StatusCode.CERT_READY)
                 .merchantReqDt(requestDatetime)

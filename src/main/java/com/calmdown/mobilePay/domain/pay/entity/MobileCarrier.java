@@ -55,7 +55,8 @@ public class MobileCarrier {
         this.limitAmount = limitAmount;
     }
 
-    public void updateResult(String carrierReturnCode, String carrierReturnMsg) {
+    public void updateResult(String carrierTrxid, String carrierReturnCode, String carrierReturnMsg) {
+        this.carrierTrxid = carrierTrxid;
         this.carrierReturnCode = carrierReturnCode;
         this.carrierReturnMsg = carrierReturnMsg;
     }

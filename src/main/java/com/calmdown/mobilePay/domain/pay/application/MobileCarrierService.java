@@ -14,14 +14,25 @@ import org.springframework.transaction.annotation.Transactional;
 public class MobileCarrierService {
     private  final MobileCarrierRepository mobileCarrierRepository;
 
+    /**
+     * gw 통신 결과 저장
+     * @param mobileCarrier
+     * @return
+     */
     @Transactional
     public MobileCarrier save(MobileCarrier mobileCarrier) {
         return mobileCarrierRepository.save(mobileCarrier);
     }
 
+    /**
+     * gw 통신 결과 업데이트
+     * @param mobileCarrier
+     * @param response
+     * @return
+     */
     @Transactional
     public MobileCarrier updateStatus(MobileCarrier mobileCarrier, GatewayResponse response) {
-        mobileCarrier.updateResult(response.getResultCode(), response.getResultMessage());
+        mobileCarrier.updateResult(response.getMobileTrxid(), response.getResultCode(), response.getResultMessage());
         return mobileCarrierRepository.save(mobileCarrier);
     }
 }
