@@ -7,12 +7,14 @@ import com.calmdown.mobilePay.domain.model.ResultCode;
 import com.calmdown.mobilePay.domain.pay.StatusCode;
 import com.calmdown.mobilePay.domain.pay.dto.*;
 import com.calmdown.mobilePay.domain.pay.entity.Cancel;
+import com.calmdown.mobilePay.domain.pay.entity.MobileCarrier;
 import com.calmdown.mobilePay.domain.pay.entity.Payment;
 import com.calmdown.mobilePay.domain.pay.entity.SmsCheck;
 import com.calmdown.mobilePay.global.infra.SmsSendUtil;
 import com.calmdown.mobilePay.global.exception.errorCode.CommonErrorCode;
 import com.calmdown.mobilePay.global.exception.exception.UserException;
 
+import com.calmdown.mobilePay.global.infra.simpleGw.SimpleGwService;
 import com.calmdown.mobilePay.global.infra.simpleGw.dto.GatewayResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +30,14 @@ public class PaymentStatus {
 
     private final PaymentService paymentService;
     private final MerchantService merchantService;
+    private final MobileCarrierService mobileCarrierService;
     private final SmsCheckService smsCheckService;
     private final CancelService cancelService;
-    private final SmsSendUtil smsSendUtil;
 
-    /*
+    private final SmsSendUtil smsSendUtil;
+    private final SimpleGwService simpleGwService;
+
+    /**
      * 인증
      */
     public CertResponseDto cert(CertRequestDto request) throws Exception {
@@ -42,40 +47,34 @@ public class PaymentStatus {
         Merchant merchant = merchantService.findById(request.getMerchantId());
 
         // Payment 객체 생성
-        Payment payment = request.toEntityCertReq();
-        payment.setMerchant(merchant);
+        Payment payment = request.toEntityCertReq(merchant);
 
         // payment 테이블에 결제 정보 저장
         Payment savePayment = paymentService.save(payment);
 
         // gw 통신
-        String gw ="";
+        GatewayResponse gwResponse = simpleGwService.cert(savePayment);
 
-        // Payment 거래 상태 변경
-        // gw 통신 성공 or 실패
-        if(gw != null){
-            payment.updateStatus(StatusCode.CERT_SUCCESS);
+        // gw 통신 결과 저장과 Payment 거래 상태 변경
+        MobileCarrier mobileCarrier = mobileCarrierService.save(gwResponse.toEntity());
+        paymentService.saveMobileResponse(savePayment, mobileCarrier);
+
+        if(CommonErrorCode.SUCCESS.getResultCode().equals(mobileCarrier.getCarrierReturnCode())) {
+            // SMS 전송 / 인증번호 난수 생성 후 SMS 전송 Api 호출 (SMS API 전송 성공 코드:2000)
+            String randomNum = createRandomNumber();
+            sendSms(request, randomNum);
+
+            //SMS 인증번호 Save
+            payment.setSmsCheckNumber(randomNum);
             paymentService.save(payment);
-        }else{
-            payment.updateStatus(StatusCode.CERT_FAILURE);
-            paymentService.save(payment);
-            throw new UserException(CommonErrorCode.MOBILE_CARRIER_SERVER_ERROR);
         }
-
-        // SMS 전송 / 인증번호 난수 생성 후 SMS 전송 Api 호출 (SMS API 전송 성공 코드:2000)
-        String randomNum = createRandomNumber();
-        sendSms(request, randomNum);
-
-        //SMS 인증번호 Save
-        payment.setSmsCheckNumber(randomNum);
-        paymentService.save(payment);
 
         return CertResponseDto.builder()
                 .transactionId(String.valueOf(savePayment.getId()))
-                .limitAmount(10000L)
                 .payAmount(savePayment.getPayAmount())
-                .resultCode(String.valueOf(ResultCode.SUCCESS))
-                .resultMessage(CommonErrorCode.SUCCESS.getMessage())
+                .limitAmount(gwResponse.getLimitAmount())
+                .resultCode(gwResponse.getResultCode())
+                .resultMessage(gwResponse.getResultMessage())
                 .build();
     }
 
@@ -102,11 +101,11 @@ public class PaymentStatus {
         return code;
     }
 
-    /*
+    /**
      * SMS 인증번호 확인
      */
     public SmsCheckResponseDto smsCheck(SmsCheckRequestDto request){
-        log.info("PaymentCertRequestDto => " + request.toString());
+        CommonErrorCode errorCode;
 
         // 가맹점 ID 유효성 검증
         Merchant merchant = merchantService.findById(Long.valueOf(request.getMerchantId()));
@@ -119,26 +118,30 @@ public class PaymentStatus {
         if(merchant.getMaxSmsCount() <= payment.getSmsChecks().size()) {
             throw new UserException(CommonErrorCode.SMS_CHECK_NUMBER_OVER_REQUEST);
         }
+        
+        // 인증 가능 시간 확인
 
         // 인증번호 확인
-        log.info("[{}] PaymentSmsCheck 인증 번호 {}, 요청 인증 번호 {}", request.getTransactionId(),
-                payment.getSmsCheckNumber(), request.getSmsCheckNumber());
+        log.info("[{}] PaymentSmsCheck 인증 번호 {}, 요청 인증 번호 {}", request.getTransactionId()
+                , payment.getSmsCheckNumber(), request.getSmsCheckNumber());
         SmsCheck smsCheck = smsCheckService.save(request, payment);
-        if(smsCheck.getSmsCheckStatus().equals(StatusCode.SMS_CHECK_FAILURE)) {
-            throw new UserException(CommonErrorCode.SMS_CHECK_NUMBER_MISMATCH);
-        }
+        
+        if(StatusCode.SMS_CHECK_SUCCESS.equals(smsCheck.getSmsCheckStatus()))
+            errorCode = CommonErrorCode.SMS_CHECK_NUMBER_MISMATCH;
+        else
+            errorCode = CommonErrorCode.SUCCESS;
 
         return SmsCheckResponseDto.builder()
-                .resultCode(CommonErrorCode.SUCCESS.getResultCode())
-                .resultMessage(CommonErrorCode.SUCCESS.getMessage())
+                .paymentId(payment.getId())
+                .resultCode(errorCode.getResultCode())
+                .resultMessage(errorCode.getMessage())
                 .build();
     }
 
-    /*
+    /**
      * 승인
      */
     public AuthResponseDto auth(AuthRequestDto request) {
-        log.info("PaymentCertRequestDto => " + request.toString());
 
         // 가맹점 ID 유효성 검증
         Merchant merchant = merchantService.findById(Long.valueOf(request.getMerchantId()));
@@ -158,25 +161,24 @@ public class PaymentStatus {
                 .orElseThrow(() -> new UserException(CommonErrorCode.INVALID_AUTH_STATUS_SMS_CHECK));
 
         // gw 통신
-        GatewayResponse gwResponse = null;
+        GatewayResponse gwResponse = simpleGwService.auth(payment);
         
         // Payment 거래 상태 변경
-        paymentService.updateStatus(payment, StatusCode.AUTH_SUCCESS);
+        paymentService.updateMobileResponse(payment, gwResponse.toEntity());
 
         AuthResponseDto response = AuthResponseDto.builder()
-                .resultCode(CommonErrorCode.SUCCESS.getResultCode())
-                .resultMessage(CommonErrorCode.SUCCESS.getMessage())
-                .transactionId(request.getTransactionId())
-                .limitAmount(10000L)
-                .payAmount(request.getAmount())
+                .transactionId(String.valueOf(payment.getId()))
+                .payAmount(payment.getPayAmount())
+                .resultMessage(gwResponse.getResultMessage())
+                .limitAmount(gwResponse.getLimitAmount())
+                .resultCode(gwResponse.getResultCode())
                 .build()
                 ;
 
-        log.info("[{}] PaymentAuth => {}", request.getTransactionId(), response.toString());
         return response;
     }
 
-    /*
+    /**
      * 취소
      */
     public CancelResponseDto cancel(CancelRequestDto request) {

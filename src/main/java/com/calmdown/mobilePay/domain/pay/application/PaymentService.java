@@ -3,10 +3,12 @@ package com.calmdown.mobilePay.domain.pay.application;
 import com.calmdown.mobilePay.domain.merchant.entity.Merchant;
 import com.calmdown.mobilePay.domain.model.ResultCode;
 import com.calmdown.mobilePay.domain.pay.StatusCode;
+import com.calmdown.mobilePay.domain.pay.entity.MobileCarrier;
 import com.calmdown.mobilePay.domain.pay.entity.Payment;
 import com.calmdown.mobilePay.domain.pay.repository.PaymentRepository;
 import com.calmdown.mobilePay.global.exception.errorCode.CommonErrorCode;
 import com.calmdown.mobilePay.global.exception.exception.UserException;
+import com.calmdown.mobilePay.global.infra.simpleGw.dto.GatewayResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
 import org.springframework.stereotype.Service;
@@ -35,9 +37,54 @@ public class PaymentService {
         return payment;
     }
 
+    /**
+     * 거래내역의 거래 상태값 변경
+     * @param payment
+     * @param statusCode
+     * @return
+     */
     @Transactional
     public Payment updateStatus(Payment payment, StatusCode statusCode) {
         payment.updateStatus(statusCode);
+        return paymentRepository.save(payment);
+    }
+
+    /**
+     * gw 통신 성공 or 실패 결과 저장
+     * @param payment
+     * @param mobileCarrier
+     * @return
+     */
+    @Transactional
+    public Payment saveMobileResponse(Payment payment, MobileCarrier mobileCarrier) {
+        if(CommonErrorCode.SUCCESS.getResultCode().equals(mobileCarrier.getCarrierReturnCode()))
+            payment.updateStatus(StatusCode.CERT_SUCCESS);
+        else
+            payment.updateStatus(StatusCode.CERT_FAILURE);
+        
+        payment.setMobileCarrier(mobileCarrier);
+
+        return paymentRepository.save(payment);
+    }
+
+    /**
+     * gw 통신 결과 업데이트
+     * @param payment
+     * @param mobileCarrier
+     * @return
+     */
+    @Transactional
+    public Payment updateMobileResponse(Payment payment, MobileCarrier mobileCarrier) {
+        if(CommonErrorCode.SUCCESS.getResultCode().equals(mobileCarrier.getCarrierReturnCode()))
+            payment.updateStatus(StatusCode.AUTH_SUCCESS);
+        else
+            payment.updateStatus(StatusCode.AUTH_FAILURE);
+
+        payment.getMobileCarrier()
+                .updateResult(mobileCarrier.getCarrierTrxid(),
+                        mobileCarrier.getCarrierReturnCode(),
+                        mobileCarrier.getCarrierReturnMsg());
+
         return paymentRepository.save(payment);
     }
 

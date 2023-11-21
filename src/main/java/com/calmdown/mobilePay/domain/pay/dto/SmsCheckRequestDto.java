@@ -46,18 +46,4 @@ public class SmsCheckRequestDto {
                 .build()
                 ;
     }
-/*  //인증번호
-    @NotNull
-    public Long smsAuthNumber;*/
-
-    //인증번호 [String]
-/*    @NotBlank
-    public String smsAuthNumber;*/
-
-    public SmsCheck toEntitySendSmsReq(String smsCheckNumber){
-        return SmsCheck.smsSendingBuilder()
-                .statusCode(StatusCode.SMS_CHECK_SUCCESS)
-                .smsCheckNumber(smsCheckNumber)
-                .build();
-    }
 }
