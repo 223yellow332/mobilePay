@@ -89,7 +89,6 @@ public class CertRequestDto {
                         .gender(gender)
                         .email(email).build())
                 .merchantTrxid(merchantTrxid)
-                .merchantReqDt(requestDatetime)
                 .build();
     }
 

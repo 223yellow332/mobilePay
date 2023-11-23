@@ -12,8 +12,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class CertResponseDto extends MobilePayResposeMessage {
 
-    //TRANSACTION_ID
-    public String transactionId;
+    //TRANSACTION_ID --> PAYMENT_ID
+    public String paymentId;
 
     //결제금액
     public Long payAmount;

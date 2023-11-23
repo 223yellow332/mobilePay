@@ -21,6 +21,7 @@ public class Cancel extends BaseTimeEntity {
     private Payment payment;
 
     //취소금액
+    @Column(name="cancel_amount")
     private int cancelAmount;
 
     //취소상태 [CANCEL_READY, CANCEL_SUCCESS, CANCEL_FAIL]
@@ -34,6 +35,7 @@ public class Cancel extends BaseTimeEntity {
         this.statusCode = statusCode;
     }
 
+    //TODO: set 코드 개선
     public void setStatusCode(StatusCode statusCode) {
         this.statusCode = statusCode;
     }

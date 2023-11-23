@@ -26,16 +26,14 @@ public class CancelRequestDto {
     @Length(max = 20)
     public String merchantTrxid;
 
-    //TRANSACTION_ID
+    //TRANSACTION_ID -> PAYMENT_ID
     @NotBlank
-    public String transactionId;
+    public String paymentId;
 
     //취소금액
     //@NotBlank
     //@Length(max = 10)
     public Long cancelAmount;
-
-
 
     public Cancel toEntity(Payment payment){
         return Cancel.builder()

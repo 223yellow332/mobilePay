@@ -12,8 +12,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class CancelResponseDto extends MobilePayResposeMessage {
 
-    //TRANSACTION_ID
-    public String transactionId;
+    //TRANSACTION_ID --> PAYMENT_ID
+    public String paymentId;
 
     //취소금액
     public Long cancelAmount;

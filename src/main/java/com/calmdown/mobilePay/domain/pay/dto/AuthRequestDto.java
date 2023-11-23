@@ -21,10 +21,10 @@ public class AuthRequestDto {
     @Pattern(regexp = "^[0-9]*$", message = "가맹점ID 형식이 잘못되었습니다.")
     public String merchantId;
 
-    //TRANSACTION_ID
+    //TRANSACTION_ID --> PAYMENT_ID
     @NotBlank
     @Pattern(regexp = "^[0-9]*$", message = "결제ID 형식이 잘못되었습니다.")
-    public String transactionId;
+    public String paymentId;
 
     //결제금액
     @Positive(message = "결제금액은 1원 이상부터 가능합니다.")

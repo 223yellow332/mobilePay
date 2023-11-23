@@ -105,6 +105,7 @@ public class Payment extends BaseTimeEntity {
         this.merchantReqDt = merchantReqDt;
     }
 
+    //TODO: set 코드 개선
     public void updateStatus(StatusCode statusCode) {
         this.statusCode = statusCode;
     }

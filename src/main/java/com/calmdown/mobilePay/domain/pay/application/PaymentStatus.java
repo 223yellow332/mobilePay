@@ -49,7 +49,7 @@ public class PaymentStatus {
         // Payment 객체 생성
         Payment payment = request.toEntityCertReq(merchant);
 
-        // payment 테이블에 결제 정보 저장
+        // payment 테이블에 결제 정보 저장 --> save payment ???
         Payment savePayment = paymentService.save(payment);
 
         // gw 통신
@@ -64,13 +64,13 @@ public class PaymentStatus {
             String randomNum = createRandomNumber();
             sendSms(request, randomNum);
 
-            //SMS 인증번호 Save
+            //SMS 인증번호 Save TODO: set 코드 개선
             payment.setSmsCheckNumber(randomNum);
             paymentService.save(payment);
         }
 
         return CertResponseDto.builder()
-                .transactionId(String.valueOf(savePayment.getId()))
+                .paymentId(String.valueOf(savePayment.getId()))
                 .payAmount(savePayment.getPayAmount())
                 .limitAmount(gwResponse.getLimitAmount())
                 .resultCode(gwResponse.getResultCode())
@@ -111,7 +111,7 @@ public class PaymentStatus {
         Merchant merchant = merchantService.findById(Long.valueOf(request.getMerchantId()));
 
         // Payment 거래 내역 조회 (인증 성공)
-        Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getTransactionId()),
+        Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getPaymentId()),
                                                                 StatusCode.CERT_SUCCESS, merchant);
 
         // 인증번호 확인 최대 횟수 초과했는지 체크
@@ -122,7 +122,7 @@ public class PaymentStatus {
         // 인증 가능 시간 확인
 
         // 인증번호 확인
-        log.info("[{}] PaymentSmsCheck 인증 번호 {}, 요청 인증 번호 {}", request.getTransactionId()
+        log.info("[{}] PaymentSmsCheck 인증 번호 {}, 요청 인증 번호 {}", request.getPaymentId()
                 , payment.getSmsCheckNumber(), request.getSmsCheckNumber());
         SmsCheck smsCheck = smsCheckService.save(request, payment);
         
@@ -147,7 +147,7 @@ public class PaymentStatus {
         Merchant merchant = merchantService.findById(Long.valueOf(request.getMerchantId()));
         
         // Payment 거래 내역 조회
-        Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getTransactionId()),
+        Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getPaymentId()),
                 StatusCode.CERT_SUCCESS, merchant);
 
         // Payment 거래 상태 변경 (승인대기)
@@ -167,7 +167,7 @@ public class PaymentStatus {
         paymentService.updateMobileResponse(payment, gwResponse.toEntity());
 
         AuthResponseDto response = AuthResponseDto.builder()
-                .transactionId(String.valueOf(payment.getId()))
+                .paymentId(String.valueOf(payment.getId()))
                 .payAmount(payment.getPayAmount())
                 .resultMessage(gwResponse.getResultMessage())
                 .limitAmount(gwResponse.getLimitAmount())
@@ -188,10 +188,10 @@ public class PaymentStatus {
         Merchant merchant = merchantService.findById(request.getMerchantId());
 
         // Payment 승인성공(AUTH_SUCCESS) 거래 내역 조회
-        Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getTransactionId()), StatusCode.AUTH_SUCCESS, merchant);
+        Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getPaymentId()), StatusCode.AUTH_SUCCESS, merchant);
 
         //기취소 여부 확인(CANCEL_SUCCESS)
-        if(cancelService.findCancelStatusById(Long.valueOf(request.getTransactionId())) == StatusCode.CANCEL_SUCCESS)
+        if(cancelService.findCancelStatusById(Long.valueOf(request.getPaymentId())) == StatusCode.CANCEL_SUCCESS)
             throw new UserException(CommonErrorCode.INVALID_CANCEL_STATUS);
 
         // 취소 정보 저장 (CANCEL_READY)
@@ -207,7 +207,7 @@ public class PaymentStatus {
         cancelService.save(cancel);
 
         return CancelResponseDto.builder()
-                .transactionId(request.getTransactionId())
+                .paymentId(request.getPaymentId())
                 .cancelAmount(request.getCancelAmount())
                 .build();
     }

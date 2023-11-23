@@ -1,5 +1,6 @@
 package com.calmdown.mobilePay.domain.merchant.entity;
 
+import com.calmdown.mobilePay.domain.pay.entity.Payment;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,6 +24,9 @@ public class Merchant {
 
     @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
     private List<MerchantUser> merchantUsers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "merchant", fetch = FetchType.LAZY)
+    private List<Payment> payments = new ArrayList<>();
 
     @Column(length = 50, nullable = false)
     private  String merchantName;
