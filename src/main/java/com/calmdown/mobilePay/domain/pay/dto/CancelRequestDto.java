@@ -3,6 +3,7 @@ package com.calmdown.mobilePay.domain.pay.dto;
 import com.calmdown.mobilePay.domain.pay.StatusCode;
 import com.calmdown.mobilePay.domain.pay.entity.Cancel;
 import com.calmdown.mobilePay.domain.pay.entity.Payment;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -31,14 +32,16 @@ public class CancelRequestDto {
     public String paymentId;
 
     //취소금액
-    //@NotBlank
-    //@Length(max = 10)
+    @NotBlank
+    @Max(1000000)
     public Long cancelAmount;
 
+    //취소 요청
     public Cancel toEntity(Payment payment){
         return Cancel.builder()
                 .payment(payment)
                 .statusCode(StatusCode.CANCEL_READY)
+                .cancelAmount(payment.getPayAmount())
                 .build();
     }
 

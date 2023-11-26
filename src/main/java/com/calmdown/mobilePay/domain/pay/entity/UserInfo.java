@@ -3,6 +3,8 @@ package com.calmdown.mobilePay.domain.pay.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,13 +20,16 @@ public class UserInfo {
     private String userName;
 
     //생년월일
+    @NotNull
     @Column(name="social_number")
     private String socialNumber;
 
     //성별
+    @NotNull
     private String gender;
 
     //E-mail
+    @Email
     private String email;
 
     @Builder

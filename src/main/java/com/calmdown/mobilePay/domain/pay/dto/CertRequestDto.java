@@ -35,7 +35,7 @@ public class CertRequestDto {
     public String merchantTrxid;
 
     // 요청시간 -> 인증때만
-//    @Length(min = 14, max = 14)
+    // @Length(min = 14, max = 14)
     @DateTimeFormat(pattern = "yyyyMMddHHmmss")
     public Date requestDatetime;
 

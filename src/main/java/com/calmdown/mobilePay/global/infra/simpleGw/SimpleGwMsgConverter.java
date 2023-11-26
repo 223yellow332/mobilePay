@@ -2,6 +2,7 @@ package com.calmdown.mobilePay.global.infra.simpleGw;
 
 import com.calmdown.mobilePay.domain.pay.dto.AuthRequestDto;
 import com.calmdown.mobilePay.domain.pay.dto.CertRequestDto;
+import com.calmdown.mobilePay.domain.pay.entity.Cancel;
 import com.calmdown.mobilePay.domain.pay.entity.Payment;
 import com.calmdown.mobilePay.global.infra.simpleGw.dto.SimpleGwAuthRequest;
 import com.calmdown.mobilePay.global.infra.simpleGw.dto.SimpleGwCancelRequest;

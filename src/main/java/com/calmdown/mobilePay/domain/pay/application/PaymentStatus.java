@@ -49,7 +49,7 @@ public class PaymentStatus {
         // Payment 객체 생성
         Payment payment = request.toEntityCertReq(merchant);
 
-        // payment 테이블에 결제 정보 저장 --> save payment ???
+        // payment 테이블에 결제 정보 저장
         Payment savePayment = paymentService.save(payment);
 
         // gw 통신
@@ -64,8 +64,8 @@ public class PaymentStatus {
             String randomNum = createRandomNumber();
             sendSms(request, randomNum);
 
-            //SMS 인증번호 Save TODO: set 코드 개선
-            payment.setSmsCheckNumber(randomNum);
+            //SMS 인증번호 Save
+            payment.updateSmsCheckNumber(randomNum);
             paymentService.save(payment);
         }
 
@@ -182,7 +182,7 @@ public class PaymentStatus {
      * 취소
      */
     public CancelResponseDto cancel(CancelRequestDto request) {
-        log.info("PaymentCertRequestDto => " + request.toString());
+        log.info("PaymentCancelRequestDto => " + request.toString());
 
         // 가맹점 ID 유효성 검증
         Merchant merchant = merchantService.findById(request.getMerchantId());
@@ -194,17 +194,19 @@ public class PaymentStatus {
         if(cancelService.findCancelStatusById(Long.valueOf(request.getPaymentId())) == StatusCode.CANCEL_SUCCESS)
             throw new UserException(CommonErrorCode.INVALID_CANCEL_STATUS);
 
-        // 취소 정보 저장 (CANCEL_READY)
+        // 취소 요청 -->
+        if(payment.getPayAmount()>request.getCancelAmount())
+            throw new UserException(CommonErrorCode.INVALID_CANCEL_AMOUNT);
+
         Cancel cancel = request.toEntity(payment);
-        cancelService.save(cancel);
+        Cancel saveCancel = cancelService.save(cancel);
 
-        // gw 통신
-        String gw ="";
+        // gw 통신 및 결과 UPDATE
+        GatewayResponse gwResponse = simpleGwService.cancel(payment);
+        MobileCarrier mobileCarrier = mobileCarrierService.save(gwResponse.toEntity());
 
-        // 사용 가능 한도액 (한도++)
-        // Cancel 테이블 거래 상태 변경 (CANCEL_SUCCESS or CANCEL_FAILURE)
-        cancel.setStatusCode(StatusCode.CANCEL_SUCCESS);
-        cancelService.save(cancel);
+        // 취소 승인 -->
+        cancelService.updateCancelStatus(saveCancel, payment, mobileCarrier);
 
         return CancelResponseDto.builder()
                 .paymentId(request.getPaymentId())
