@@ -3,6 +3,7 @@ package com.calmdown.mobilePay.domain.pay.application;
 import com.calmdown.mobilePay.domain.merchant.entity.Merchant;
 import com.calmdown.mobilePay.domain.model.ResultCode;
 import com.calmdown.mobilePay.domain.pay.StatusCode;
+import com.calmdown.mobilePay.domain.pay.entity.Cancel;
 import com.calmdown.mobilePay.domain.pay.entity.MobileCarrier;
 import com.calmdown.mobilePay.domain.pay.entity.Payment;
 import com.calmdown.mobilePay.domain.pay.repository.PaymentRepository;
@@ -10,6 +11,7 @@ import com.calmdown.mobilePay.global.exception.errorCode.CommonErrorCode;
 import com.calmdown.mobilePay.global.exception.exception.UserException;
 import com.calmdown.mobilePay.global.infra.simpleGw.dto.GatewayResponse;
 import lombok.RequiredArgsConstructor;
+import okhttp3.Cache;
 import org.apache.catalina.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,5 +89,9 @@ public class PaymentService {
 
         return paymentRepository.save(payment);
     }
+
+
+
+
 
 }

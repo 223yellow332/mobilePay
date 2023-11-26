@@ -40,14 +40,20 @@ public enum CommonErrorCode implements ErrorCode{
      * 200 ~ 299
      */
     INVALID_CANCEL_STATUS(HttpStatus.BAD_REQUEST, "200", "취소 가능한 상태가 아닙니다."),
+    INVALID_CANCEL_AMOUNT(HttpStatus.BAD_REQUEST, "201", "취소 요청 금액이 승인 금액 보다 클 수 없습니다."),
 
     /*
      * SMS 전송
      * 300 ~ 399
      */
     SMS_API_SERVER_ERROR(HttpStatus.BAD_REQUEST, "300", "SMS 전송에 실패했습니다."),
-    MOBILE_CARRIER_SERVER_ERROR(HttpStatus.BAD_REQUEST, "301", "통신사 응답을 받지 못했습니다.")
-    ;
+    MOBILE_CARRIER_SERVER_ERROR(HttpStatus.BAD_REQUEST, "301", "통신사 응답을 받지 못했습니다."),
+
+    /*
+     * 가맹점 계약
+     * 400 ~ 499
+     */
+    INVALID_MERCHANT_CONTRACT(HttpStatus.BAD_REQUEST, "400", "계약 중인 가맹점이 아닙니다.");
 
     private final HttpStatus httpStatus;
     private final String resultCode;

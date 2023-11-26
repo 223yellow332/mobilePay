@@ -47,4 +47,8 @@ public class Merchant {
         this.maxSmsCount = maxSmsCount;
         this.category = category;
     }
+
+    public void terminateContract(ProgressCode progressCode){
+        this.progressCode = progressCode;
+    }
 }
