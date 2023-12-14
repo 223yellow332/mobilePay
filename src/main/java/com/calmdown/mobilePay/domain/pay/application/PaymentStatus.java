@@ -70,12 +70,12 @@ public class PaymentStatus {
             sendSms(request, randomNum);
 
             //SMS 인증번호 Save
-            payment.setSmsCheckNumber(randomNum);
+            payment.updateSmsCheckNumber(randomNum);
             paymentService.save(payment);
         }
 
         return CertResponseDto.builder()
-                .transactionId(String.valueOf(savePayment.getId()))
+                .paymentId(String.valueOf(savePayment.getId()))
                 .payAmount(savePayment.getPayAmount())
                 .limitAmount(gwResponse.getLimitAmount())
                 .resultCode(gwResponse.getResultCode())
@@ -116,25 +116,17 @@ public class PaymentStatus {
         Merchant merchant = merchantService.findById(Long.valueOf(request.getMerchantId()));
 
         // Payment 거래 내역 조회 (인증 성공)
-<<<<<<< Updated upstream
-        Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getTransactionId()),
-                                                                StatusCode.CERT_SUCCESS, merchant);
-=======
+
         Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getPaymentId()),
-                StatusCode.CERT_SUCCESS, merchant);
->>>>>>> Stashed changes
+                                                                StatusCode.CERT_SUCCESS, merchant);
 
         // 인증번호 확인 최대 횟수 초과했는지 체크
         if (merchant.getMaxSmsCount() <= payment.getSmsChecks().size()) {
             throw new UserException(CommonErrorCode.SMS_CHECK_NUMBER_OVER_REQUEST);
         }
 
-<<<<<<< Updated upstream
         // 인증번호 확인
-        log.info("[{}] PaymentSmsCheck 인증 번호 {}, 요청 인증 번호 {}", request.getTransactionId()
-=======
         log.info("[{}] PaymentSmsCheck 인증 번호 {}, 요청 인증 번호 {}", request.getPaymentId()
->>>>>>> Stashed changes
                 , payment.getSmsCheckNumber(), request.getSmsCheckNumber());
 
         // SMS 인증번호 확인 내역 저장
@@ -169,7 +161,7 @@ public class PaymentStatus {
         Merchant merchant = merchantService.findById(Long.valueOf(request.getMerchantId()));
         
         // Payment 거래 내역 조회
-        Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getTransactionId()),
+        Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getPaymentId()),
                 StatusCode.CERT_SUCCESS, merchant);
 
         // Payment 거래 상태 변경 (승인대기)
@@ -189,7 +181,7 @@ public class PaymentStatus {
         paymentService.updateMobileResponse(payment, gwResponse.toEntity());
 
         AuthResponseDto response = AuthResponseDto.builder()
-                .transactionId(String.valueOf(payment.getId()))
+                .paymentId(String.valueOf(payment.getId()))
                 .payAmount(payment.getPayAmount())
                 .resultMessage(gwResponse.getResultMessage())
                 .limitAmount(gwResponse.getLimitAmount())
@@ -204,32 +196,34 @@ public class PaymentStatus {
      * 취소
      */
     public CancelResponseDto cancel(CancelRequestDto request) {
-        log.info("PaymentCertRequestDto => " + request.toString());
+        log.info("PaymentCancelRequestDto => " + request.toString());
 
         // 가맹점 ID 유효성 검증
         Merchant merchant = merchantService.findById(request.getMerchantId());
 
         // Payment 승인성공(AUTH_SUCCESS) 거래 내역 조회
-        Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getTransactionId()), StatusCode.AUTH_SUCCESS, merchant);
+        Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getPaymentId()), StatusCode.AUTH_SUCCESS, merchant);
 
         //기취소 여부 확인(CANCEL_SUCCESS)
-        if(cancelService.findCancelStatusById(Long.valueOf(request.getTransactionId())) == StatusCode.CANCEL_SUCCESS)
+        if(cancelService.findCancelStatusById(Long.valueOf(request.getPaymentId())) == StatusCode.CANCEL_SUCCESS)
             throw new UserException(CommonErrorCode.INVALID_CANCEL_STATUS);
 
-        // 취소 정보 저장 (CANCEL_READY)
+        // 취소 요청 -->
+        if(payment.getPayAmount()>request.getCancelAmount())
+            throw new UserException(CommonErrorCode.INVALID_CANCEL_AMOUNT);
+
         Cancel cancel = request.toEntity(payment);
-        cancelService.save(cancel);
+        Cancel saveCancel = cancelService.save(cancel);
 
-        // gw 통신
-        String gw ="";
+        // gw 통신 및 결과 UPDATE
+        GatewayResponse gwResponse = simpleGwService.cancel(payment);
+        MobileCarrier mobileCarrier = mobileCarrierService.save(gwResponse.toEntity());
 
-        // 사용 가능 한도액 (한도++)
-        // Cancel 테이블 거래 상태 변경 (CANCEL_SUCCESS or CANCEL_FAILURE)
-        cancel.setStatusCode(StatusCode.CANCEL_SUCCESS);
-        cancelService.save(cancel);
+        // 취소 승인 -->
+        cancelService.updateCancelStatus(saveCancel, payment, mobileCarrier);
 
         return CancelResponseDto.builder()
-                .transactionId(request.getTransactionId())
+                .paymentId(request.getPaymentId())
                 .cancelAmount(request.getCancelAmount())
                 .build();
     }

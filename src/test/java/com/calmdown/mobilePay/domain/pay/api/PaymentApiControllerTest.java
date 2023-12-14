@@ -53,7 +53,7 @@ public class PaymentApiControllerTest {
         CertResponseDto response = CertResponseDto.builder()
                 .resultCode("0")
                 .resultMessage("성공")
-                .transactionId("1")
+                .paymentId("1")
                 .payAmount(15000L)
                 .limitAmount(240000L)
                 .payDateTime("20231112125959")

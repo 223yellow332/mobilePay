@@ -6,6 +6,7 @@ import com.calmdown.mobilePay.domain.pay.StatusCode;
 import com.calmdown.mobilePay.domain.pay.repository.MobileCarrierRepository;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,7 @@ public class Payment extends BaseTimeEntity {
 
     //가맹점 ID
     //결제(N) : 가맹점(1)
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "merchant_id")
     private Merchant merchant;
@@ -60,6 +62,7 @@ public class Payment extends BaseTimeEntity {
     private long payAmount;
 
     //휴대폰 번호
+    @NotNull
     @Column(nullable = false)
     private String phone;
 
@@ -67,12 +70,12 @@ public class Payment extends BaseTimeEntity {
     @Column(name="sms_auth_number")
     private String smsCheckNumber;
 
-
     //Embedded: 상세 고객 정보 (고객이름, 생년월일, 성별, Email)
     @Embedded
     private UserInfo userInfo;
 
     //가맹점 거래번호
+    @NotNull
     @Column(name="merchant_trxid")
     private String merchantTrxid;
 
@@ -113,7 +116,7 @@ public class Payment extends BaseTimeEntity {
         this.mobileCarrier = mobileCarrier;
     }
 
-    public void setSmsCheckNumber(String smsCheckNumber) {
+    public void updateSmsCheckNumber(String smsCheckNumber) {
         this.smsCheckNumber = smsCheckNumber;
     }
 

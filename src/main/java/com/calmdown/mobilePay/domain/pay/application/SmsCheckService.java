@@ -34,8 +34,4 @@ public class SmsCheckService {
         return saveSmsCheck;
     }
 
-    public SmsCheck saveSmsInfo(SmsCheck smsCheck) {
-        return smsCheckRepository.save(smsCheck);
-
-    }
 }

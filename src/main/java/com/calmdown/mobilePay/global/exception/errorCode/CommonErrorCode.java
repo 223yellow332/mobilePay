@@ -41,15 +41,13 @@ public enum CommonErrorCode implements ErrorCode{
      * 200 ~ 299
      */
     INVALID_CANCEL_STATUS(HttpStatus.BAD_REQUEST, "200", "취소 가능한 상태가 아닙니다."),
+    INVALID_CANCEL_AMOUNT(HttpStatus.BAD_REQUEST, "201", "취소 요청 금액이 승인 금액 보다 클 수 없습니다."),
 
     /*
      * SMS 전송
      * 300 ~ 399
      */
     SMS_API_SERVER_ERROR(HttpStatus.BAD_REQUEST, "300", "SMS 전송에 실패했습니다."),
-<<<<<<< Updated upstream
-    MOBILE_CARRIER_SERVER_ERROR(HttpStatus.BAD_REQUEST, "301", "통신사 응답을 받지 못했습니다.")
-=======
     MOBILE_CARRIER_SERVER_ERROR(HttpStatus.BAD_REQUEST, "301", "통신사 응답을 받지 못했습니다."),
 
     /*
@@ -64,7 +62,6 @@ public enum CommonErrorCode implements ErrorCode{
      */
     INVALID_STATUS_CODE(HttpStatus.BAD_REQUEST, "400", "잘못된 형식의 거래상태 요청입니다."),
 
->>>>>>> Stashed changes
     ;
 
     private final HttpStatus httpStatus;

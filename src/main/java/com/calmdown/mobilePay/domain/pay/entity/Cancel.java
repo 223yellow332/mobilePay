@@ -21,22 +21,25 @@ public class Cancel extends BaseTimeEntity {
     private Payment payment;
 
     //취소금액
-    private int cancelAmount;
+    @Column(name="cancel_amount")
+    private long cancelAmount;
 
     //취소상태 [CANCEL_READY, CANCEL_SUCCESS, CANCEL_FAIL]
     @Enumerated(EnumType.STRING)
     private StatusCode statusCode;
 
     @Builder
-    public Cancel(Payment payment, int cancelAmount, StatusCode statusCode){
+    public Cancel(Payment payment, long cancelAmount, StatusCode statusCode){
         this.payment = payment;
         this.cancelAmount = cancelAmount;
         this.statusCode = statusCode;
     }
 
-    public void setStatusCode(StatusCode statusCode) {
+    public void updateStatus(StatusCode statusCode) {
         this.statusCode = statusCode;
     }
+
+
 
 
 }
