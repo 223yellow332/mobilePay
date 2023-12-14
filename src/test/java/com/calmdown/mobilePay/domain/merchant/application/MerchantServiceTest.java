@@ -38,15 +38,17 @@ class MerchantServiceTest {
                 .category("online")
                 .build();
 
-        given(merchantRepository.findById(0l)).willReturn(Optional.of(merchant));
+        given(merchantRepository.findById(0L)).willReturn(Optional.of(merchant));
 
         //when
-        Merchant find = merchantService.findById(0l);
+        Merchant find = merchantService.findById(0L);
 
         //then
         assertThat(find.getMaxSmsCount()).isEqualTo(2);
         assertThat(find.getMerchantName()).isEqualTo(merchant.getMerchantName());
         assertThat(find.getProgressCode()).isEqualTo(merchant.getProgressCode());
+
+        System.out.println("find = " + find.toString());
 
     }
 

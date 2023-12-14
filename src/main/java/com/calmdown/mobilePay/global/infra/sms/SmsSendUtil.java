@@ -1,4 +1,4 @@
-package com.calmdown.mobilePay.global.infra;
+package com.calmdown.mobilePay.global.infra.sms;
 
 
 import com.calmdown.mobilePay.global.exception.errorCode.CommonErrorCode;

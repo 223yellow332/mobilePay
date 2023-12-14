@@ -28,6 +28,7 @@ public enum CommonErrorCode implements ErrorCode{
      */
     SMS_CHECK_NUMBER_OVER_REQUEST(HttpStatus.BAD_REQUEST, "31", "SMS 인증번호 확인 요청 횟수 초과"),
     SMS_CHECK_NUMBER_MISMATCH(HttpStatus.BAD_REQUEST, "32", "SMS 인증번호 불일치입니다."),
+    SMS_CHECK_NUMBER_TIME_OVER(HttpStatus.BAD_REQUEST, "33", "SMS 인증번호 확인시간 초과입니다."),
 
     /*
      * 승인
@@ -46,7 +47,24 @@ public enum CommonErrorCode implements ErrorCode{
      * 300 ~ 399
      */
     SMS_API_SERVER_ERROR(HttpStatus.BAD_REQUEST, "300", "SMS 전송에 실패했습니다."),
+<<<<<<< Updated upstream
     MOBILE_CARRIER_SERVER_ERROR(HttpStatus.BAD_REQUEST, "301", "통신사 응답을 받지 못했습니다.")
+=======
+    MOBILE_CARRIER_SERVER_ERROR(HttpStatus.BAD_REQUEST, "301", "통신사 응답을 받지 못했습니다."),
+
+    /*
+     * 가맹점 계약
+     * 400 ~ 499
+     */
+    INVALID_MERCHANT_CONTRACT(HttpStatus.BAD_REQUEST, "400", "계약 중인 가맹점이 아닙니다."),
+
+    /*
+     * 거래내역 조회
+     * 500 ~ 599
+     */
+    INVALID_STATUS_CODE(HttpStatus.BAD_REQUEST, "400", "잘못된 형식의 거래상태 요청입니다."),
+
+>>>>>>> Stashed changes
     ;
 
     private final HttpStatus httpStatus;

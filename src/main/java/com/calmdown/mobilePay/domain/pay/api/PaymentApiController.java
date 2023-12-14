@@ -51,4 +51,9 @@ public class PaymentApiController {
         return new ResponseEntity<>(paymentStatus.cancel(request), HttpStatus.OK);
     }
 
+    @GetMapping("/api/search")
+    public ResponseEntity<String> searchPaymentId(@RequestParam String merchantId, @RequestParam String paymentId, @RequestParam String statusCode) {
+        return new ResponseEntity<>(paymentStatus.searchPaymentId(merchantId, paymentId, statusCode), HttpStatus.OK);
+    }
+
 }

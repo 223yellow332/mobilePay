@@ -1,8 +1,6 @@
 package com.calmdown.mobilePay.domain.pay.dto;
 
 import com.calmdown.mobilePay.domain.pay.StatusCode;
-import com.calmdown.mobilePay.domain.pay.entity.SmsCheck;
-import com.calmdown.mobilePay.global.dto.MobilePayResposeMessage;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -15,7 +13,7 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 @ToString(callSuper = true)
 @SuperBuilder
-public class SmsCheckResponseDto extends MobilePayResposeMessage {
+public class SmsCheckResponseDto extends MobilePayCommonRespose {
 
     //결제 ID
     @NotBlank

@@ -1,6 +1,5 @@
 package com.calmdown.mobilePay.domain.pay.dto;
 
-import com.calmdown.mobilePay.global.dto.MobilePayResposeMessage;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -10,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @ToString(callSuper = true)
 @SuperBuilder
-public class CertResponseDto extends MobilePayResposeMessage {
+public class CertResponseDto extends MobilePayCommonRespose {
 
     //TRANSACTION_ID
     public String transactionId;

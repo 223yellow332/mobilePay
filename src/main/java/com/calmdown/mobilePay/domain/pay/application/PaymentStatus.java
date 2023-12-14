@@ -2,7 +2,6 @@ package com.calmdown.mobilePay.domain.pay.application;
 
 import com.calmdown.mobilePay.domain.merchant.application.MerchantService;
 import com.calmdown.mobilePay.domain.merchant.entity.Merchant;
-import com.calmdown.mobilePay.domain.model.ResultCode;
 
 import com.calmdown.mobilePay.domain.pay.StatusCode;
 import com.calmdown.mobilePay.domain.pay.dto.*;
@@ -10,7 +9,7 @@ import com.calmdown.mobilePay.domain.pay.entity.Cancel;
 import com.calmdown.mobilePay.domain.pay.entity.MobileCarrier;
 import com.calmdown.mobilePay.domain.pay.entity.Payment;
 import com.calmdown.mobilePay.domain.pay.entity.SmsCheck;
-import com.calmdown.mobilePay.global.infra.SmsSendUtil;
+import com.calmdown.mobilePay.global.infra.sms.SmsSendUtil;
 import com.calmdown.mobilePay.global.exception.errorCode.CommonErrorCode;
 import com.calmdown.mobilePay.global.exception.exception.UserException;
 
@@ -21,7 +20,13 @@ import lombok.extern.slf4j.Slf4j;
 import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.Random;
+
+import static com.calmdown.mobilePay.global.exception.errorCode.CommonErrorCode.INVALID_STATUS_CODE;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -104,29 +109,46 @@ public class PaymentStatus {
     /**
      * SMS 인증번호 확인
      */
-    public SmsCheckResponseDto smsCheck(SmsCheckRequestDto request){
+    public SmsCheckResponseDto smsCheck(SmsCheckRequestDto request) {
         CommonErrorCode errorCode;
 
         // 가맹점 ID 유효성 검증
         Merchant merchant = merchantService.findById(Long.valueOf(request.getMerchantId()));
 
         // Payment 거래 내역 조회 (인증 성공)
+<<<<<<< Updated upstream
         Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getTransactionId()),
                                                                 StatusCode.CERT_SUCCESS, merchant);
+=======
+        Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getPaymentId()),
+                StatusCode.CERT_SUCCESS, merchant);
+>>>>>>> Stashed changes
 
         // 인증번호 확인 최대 횟수 초과했는지 체크
-        if(merchant.getMaxSmsCount() <= payment.getSmsChecks().size()) {
+        if (merchant.getMaxSmsCount() <= payment.getSmsChecks().size()) {
             throw new UserException(CommonErrorCode.SMS_CHECK_NUMBER_OVER_REQUEST);
         }
-        
-        // 인증 가능 시간 확인
 
+<<<<<<< Updated upstream
         // 인증번호 확인
         log.info("[{}] PaymentSmsCheck 인증 번호 {}, 요청 인증 번호 {}", request.getTransactionId()
+=======
+        log.info("[{}] PaymentSmsCheck 인증 번호 {}, 요청 인증 번호 {}", request.getPaymentId()
+>>>>>>> Stashed changes
                 , payment.getSmsCheckNumber(), request.getSmsCheckNumber());
+
+        // SMS 인증번호 확인 내역 저장
         SmsCheck smsCheck = smsCheckService.save(request, payment);
-        
-        if(StatusCode.SMS_CHECK_SUCCESS.equals(smsCheck.getSmsCheckStatus()))
+
+        // 인증 가능 시간 확인 : 3분이하만 허용
+        Duration duration = Duration.between(payment.getModifiedDateTime(), LocalDateTime.now());
+        long seconds = duration.getSeconds();
+        log.info("SMS 인증번호 확인 진행 시간 = {}", seconds);
+        if(seconds > 180) {
+            throw new UserException(CommonErrorCode.SMS_CHECK_NUMBER_OVER_REQUEST);
+        }
+
+        if (StatusCode.SMS_CHECK_SUCCESS.equals(smsCheck.getSmsCheckStatus()))
             errorCode = CommonErrorCode.SMS_CHECK_NUMBER_MISMATCH;
         else
             errorCode = CommonErrorCode.SUCCESS;
@@ -210,5 +232,44 @@ public class PaymentStatus {
                 .transactionId(request.getTransactionId())
                 .cancelAmount(request.getCancelAmount())
                 .build();
+    }
+
+    /**
+     * 거래상태 조회
+     */
+    public String searchPaymentId(String merchantId, String paymentId, String statusCode) {
+        String result = "";
+        try {
+            // 가맹점 ID 유효성 검증
+            Merchant merchant = merchantService.findById(Long.valueOf(merchantId));
+
+            // 거래상태 코드 유효성 검증
+            StatusCode sCode = Arrays.stream(StatusCode.values()).filter(s -> s.toString().equalsIgnoreCase(statusCode))
+                    .findFirst()
+                    .orElseThrow(() -> new UserException(INVALID_STATUS_CODE));
+
+            // Payment 거래 내역 조회
+            paymentService.checkPaymentIdStatus(
+                    Long.valueOf(paymentId), sCode, merchant
+            );
+
+        } catch (NumberFormatException e) {
+            StackTraceElement[] stackTrace = e.getStackTrace();
+            log.error("{} \n \t {}", e.getMessage(), stackTrace[0]);
+
+            return "merchantId/paymentId 형식 오류입니다.";
+        } catch (UserException e) {
+            StackTraceElement[] stackTrace = e.getStackTrace();
+            log.error("{} \n \t {}", e.getMessage(), stackTrace[0]);
+
+            return e.getMessage();
+        } catch (Exception e) {
+            StackTraceElement[] stackTrace = e.getStackTrace();
+            log.error("{} \n \t {}", e.getMessage(), stackTrace[0]);
+
+            return "거래조회에 실패했습니다.";
+        }
+
+        return "성공";
     }
 }
