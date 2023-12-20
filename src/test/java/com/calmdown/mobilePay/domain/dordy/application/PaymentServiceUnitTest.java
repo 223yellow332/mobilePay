@@ -15,6 +15,7 @@ import com.calmdown.mobilePay.global.infra.simpleGw.SimpleGwMsgConverter;
 import com.calmdown.mobilePay.global.infra.simpleGw.dto.GatewayResponse;
 import com.calmdown.mobilePay.global.infra.sms.SmsSendUtil;
 import com.calmdown.mobilePay.global.infra.simpleGw.SimpleGwService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +28,7 @@ import org.springframework.test.annotation.Commit;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import java.util.Date;
 import java.util.Optional;
@@ -62,6 +64,12 @@ public class PaymentServiceUnitTest {
     @Mock
     private SimpleGwMsgConverter simpleGwMsgConverter;
 
+
+    @BeforeEach
+    void initInfo(){
+
+    }
+
     @Test
     @DisplayName("결제정보 저장 테스트")
     void cert_test() throws Exception {
@@ -95,6 +103,7 @@ public class PaymentServiceUnitTest {
                         .email("chim@naver.com").build())
                 .merchantTrxid("9")
                 .build();
+
         paymentRepository.save(payment);
         payment.updateStatus(StatusCode.CERT_SUCCESS);
 
@@ -105,7 +114,7 @@ public class PaymentServiceUnitTest {
         //Payment savePayment = paymentService.save(payment);
 
         //then
-        //assertEquals(savePayment.getId());
+        //assertEquals(CarrierName.KT, savePayment.getCarrierName());
     }
 
 }

@@ -4,6 +4,7 @@ import com.calmdown.mobilePay.domain.merchant.entity.Merchant;
 import com.calmdown.mobilePay.domain.merchant.entity.ProgressCode;
 import com.calmdown.mobilePay.domain.merchant.repository.MerchantRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +26,7 @@ class MerchantServiceTest {
 
     @InjectMocks
     private MerchantService merchantService;
+
 
     @Test
     @DisplayName("가맹점 조회 및 상태 성공 확인")

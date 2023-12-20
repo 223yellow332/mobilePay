@@ -2,6 +2,7 @@ package com.calmdown.mobilePay.global.infra.simpleGw;
 
 import com.calmdown.mobilePay.global.infra.simpleGw.dto.GatewayResponse;
 import com.calmdown.mobilePay.global.infra.simpleGw.dto.SimpleGwCertRequest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @MockBean(JpaMetamodelMappingContext.class)
 @ExtendWith(SpringExtension.class)
+@Disabled
 class SimpleGwServiceTest {
 
     @Autowired

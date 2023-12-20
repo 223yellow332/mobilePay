@@ -8,6 +8,7 @@ import com.calmdown.mobilePay.global.infra.simpleGw.dto.SimpleGwAuthRequest;
 import com.calmdown.mobilePay.global.infra.simpleGw.dto.SimpleGwCancelRequest;
 import com.calmdown.mobilePay.global.infra.simpleGw.dto.SimpleGwCertRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 @Component
 public class SimpleGwMsgConverter {
