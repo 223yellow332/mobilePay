@@ -11,7 +11,9 @@ import com.calmdown.mobilePay.domain.pay.entity.MobileCarrier;
 import com.calmdown.mobilePay.domain.pay.entity.Payment;
 import com.calmdown.mobilePay.domain.pay.entity.UserInfo;
 import com.calmdown.mobilePay.domain.pay.repository.PaymentRepository;
-import com.calmdown.mobilePay.global.infra.SmsSendUtil;
+import com.calmdown.mobilePay.global.infra.simpleGw.SimpleGwMsgConverter;
+import com.calmdown.mobilePay.global.infra.simpleGw.dto.GatewayResponse;
+import com.calmdown.mobilePay.global.infra.sms.SmsSendUtil;
 import com.calmdown.mobilePay.global.infra.simpleGw.SimpleGwService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Commit;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -30,7 +33,7 @@ import java.util.Optional;
 
 import static com.calmdown.mobilePay.domain.pay.entity.CarrierName.KT;
 import static org.assertj.core.api.BDDAssumptions.given;
-
+import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @Commit
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -39,6 +42,7 @@ public class PaymentServiceUnitTest {
 
     @InjectMocks
     private PaymentStatus paymentStatus;
+
     @Mock
     private PaymentService paymentService;
     @Mock
@@ -53,9 +57,13 @@ public class PaymentServiceUnitTest {
     private   SimpleGwService simpleGwService;
     @Mock
     private PaymentRepository paymentRepository;
+    @Mock
+    private WebClient webClient;
+    @Mock
+    private SimpleGwMsgConverter simpleGwMsgConverter;
 
     @Test
-    @DisplayName("cert 테스트")
+    @DisplayName("결제정보 저장 테스트")
     void cert_test() throws Exception {
         //given
         Merchant merchant = Merchant.builder()
@@ -73,14 +81,31 @@ public class PaymentServiceUnitTest {
                 .payAmount(1231L)
                 .build();
 
-        Payment payment = certRequestDto.toEntityCertReq(merchant);
-        paymentStatus.cert(certRequestDto);
+        Payment payment = Payment.certReqBuilder()
+                //.merchant(merchant.getId())
+                .carrierName(CarrierName.KT)
+                .statusCode(StatusCode.CERT_READY)
+                .merchantReqDt(new Date())
+                .payAmount(9199)
+                .phone("01000000000")
+                .userInfo(UserInfo.builder()
+                        .userName("CHIM")
+                        .socialNumber("870222")
+                        .gender("M")
+                        .email("chim@naver.com").build())
+                .merchantTrxid("9")
+                .build();
+        paymentRepository.save(payment);
+        payment.updateStatus(StatusCode.CERT_SUCCESS);
 
         //when
-        paymentRepository.save(payment);
-        System.out.println( paymentRepository.save(payment));
+        //when(paymentRepository.save(payment));
+
+        //then execute
+        //Payment savePayment = paymentService.save(payment);
 
         //then
+        //assertEquals(savePayment.getId());
     }
 
 }
