@@ -2,6 +2,7 @@ package com.calmdown.mobilePay.domain.dordy.repository;
 
 import com.calmdown.mobilePay.domain.merchant.entity.Merchant;
 import com.calmdown.mobilePay.domain.merchant.entity.ProgressCode;
+import com.calmdown.mobilePay.domain.merchant.repository.MerchantRepository;
 import com.calmdown.mobilePay.domain.pay.StatusCode;
 import com.calmdown.mobilePay.domain.pay.application.PaymentService;
 import com.calmdown.mobilePay.domain.pay.entity.*;
@@ -22,6 +23,7 @@ import java.util.Optional;
 
 import static java.util.Optional.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @Transactional
 //ANY: 내장DB / NONE: 실제DB
@@ -36,15 +38,20 @@ public class PaymentRepositoryUnitTest {
     private PaymentRepository paymentRepository;
 
     @Autowired
+    private MerchantRepository merchantRepository;
+
+    @Autowired
     private CancelRepository cancelRepository;
 
 
-    @DisplayName("CERT_READY 결제 정보 저장")
+    /**
+     * 인증
+     */
+    @DisplayName("결제 정보 저장 성공 테스트")
     @Test
-    @Order(1)
-    void cert_request_test(){
+    //@Order(1)
+    void cert_save_test(){
 
-        //given
         Merchant merchant = Merchant.builder()
                 .merchantName("인증테스트가맹점")
                 .progressCode(ProgressCode.AVAILABLE)
@@ -52,6 +59,9 @@ public class PaymentRepositoryUnitTest {
                 .merchantName("online")
                 .build();
 
+        merchantRepository.save(merchant);
+
+        //given
         Payment payment = Payment.builder()
                 .merchant(merchant)
                 .carrierName(CarrierName.KT)
@@ -67,21 +77,31 @@ public class PaymentRepositoryUnitTest {
                 .merchantTrxid("9")
                 .build();
 
-       /* //when
+        //when
         paymentRepository.save(payment);
 
         //then
-        assertEquals(1L, payment.getId());*/
+        assertEquals(1L, payment.getId());
     }
 
-    @DisplayName("CERT_SUCCESS 저장")
+    //ID 와 Status로 Payment 반환
+    @DisplayName("결제 이력 조회")
     @Test
-    @Order(2)
-    void cert_success_test(){
+    void findByIdAndStatusCode_test(){
 
         //given
-        Payment payment = Payment.certReqBuilder()
-                //.merchant(merchant.getId())
+        Merchant merchant = Merchant.builder()
+                .merchantName("인증테스트가맹점")
+                .progressCode(ProgressCode.AVAILABLE)
+                .maxSmsCount(2)
+                .merchantName("online")
+                .build();
+
+        merchantRepository.save(merchant);
+
+        //given
+        Payment payment = Payment.builder()
+                .merchant(merchant)
                 .carrierName(CarrierName.KT)
                 .statusCode(StatusCode.CERT_READY)
                 .merchantReqDt(new Date())
@@ -94,16 +114,19 @@ public class PaymentRepositoryUnitTest {
                         .email("chim@naver.com").build())
                 .merchantTrxid("9")
                 .build();
-/*        paymentRepository.save(payment);
-        payment.updateStatus(StatusCode.CERT_SUCCESS);
 
         //when
-        paymentRepository.save(payment);
+        Payment savePayment = paymentRepository.save(payment);
+        Optional<Payment> targetPayment = paymentRepository.findByIdAndStatusCode(1L, StatusCode.CERT_READY);
 
-        //then*/
+        //then
+        assertEquals(savePayment.getPayAmount(), targetPayment.get().getPayAmount());
 
     }
 
+    /**
+     * 취소
+     */
     @DisplayName("취소 요청")
     @Test
     @Order(3)
@@ -146,9 +169,7 @@ public class PaymentRepositoryUnitTest {
         //when
         cancelRepository.save(cancel);
 */
-
         //then
-
 
     }
 

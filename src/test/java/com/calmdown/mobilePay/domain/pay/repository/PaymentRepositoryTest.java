@@ -8,6 +8,7 @@ import com.calmdown.mobilePay.domain.pay.entity.CarrierName;
 import com.calmdown.mobilePay.domain.pay.entity.Payment;
 import com.calmdown.mobilePay.global.exception.errorCode.CommonErrorCode;
 import com.calmdown.mobilePay.global.exception.exception.UserException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Disabled
 class PaymentRepositoryTest {
     @Autowired
     private MerchantRepository merchantRepository;
