@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.Random;
 
 import static com.calmdown.mobilePay.global.exception.errorCode.CommonErrorCode.INVALID_STATUS_CODE;
@@ -125,13 +124,6 @@ public class PaymentStatus {
             throw new UserException(CommonErrorCode.SMS_CHECK_NUMBER_OVER_REQUEST);
         }
 
-        // 인증번호 확인
-        log.info("[{}] PaymentSmsCheck 인증 번호 {}, 요청 인증 번호 {}", request.getPaymentId()
-                , payment.getSmsCheckNumber(), request.getSmsCheckNumber());
-
-        // SMS 인증번호 확인 내역 저장
-        SmsCheck smsCheck = smsCheckService.save(request, payment);
-
         // 인증 가능 시간 확인 : 3분이하만 허용
         Duration duration = Duration.between(payment.getModifiedDateTime(), LocalDateTime.now());
         long seconds = duration.getSeconds();
@@ -140,7 +132,14 @@ public class PaymentStatus {
             throw new UserException(CommonErrorCode.SMS_CHECK_NUMBER_OVER_REQUEST);
         }
 
-        if (StatusCode.SMS_CHECK_SUCCESS.equals(smsCheck.getSmsCheckStatus()))
+        // 인증번호 확인
+        log.info("[{}] PaymentSmsCheck 인증 번호 {}, 요청 인증 번호 {}", request.getPaymentId()
+                , payment.getSmsCheckNumber(), request.getSmsCheckNumber());
+
+        // SMS 인증번호 확인 내역 저장
+        SmsCheck smsCheck = smsCheckService.save(request, payment);
+
+        if (StatusCode.SMS_CHECK_SUCCESS.equals(smsCheck.getStatusCode()))
             errorCode = CommonErrorCode.SMS_CHECK_NUMBER_MISMATCH;
         else
             errorCode = CommonErrorCode.SUCCESS;
@@ -169,7 +168,7 @@ public class PaymentStatus {
 
         // SMS 인증번호 완료된 거래만 결제 가능
         StatusCode smCheckResult = payment.getSmsChecks().stream()
-                .map(SmsCheck::getSmsCheckStatus)
+                .map(SmsCheck::getStatusCode)
                 .filter(x -> x.equals(StatusCode.SMS_CHECK_SUCCESS))
                 .findFirst()
                 .orElseThrow(() -> new UserException(CommonErrorCode.INVALID_AUTH_STATUS_SMS_CHECK));
@@ -179,6 +178,7 @@ public class PaymentStatus {
         
         // Payment 거래 상태 변경
         paymentService.updateMobileResponse(payment, gwResponse.toEntity());
+        mobileCarrierService.updateStatus(payment.getMobileCarrier(), gwResponse);
 
         AuthResponseDto response = AuthResponseDto.builder()
                 .paymentId(String.valueOf(payment.getId()))

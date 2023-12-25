@@ -34,13 +34,15 @@ dependencies {
 	// WebClient 의존성 추가
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-	testImplementation 'junit:junit:4.13.1'
-	testImplementation 'junit:junit:4.13.1'
-	testImplementation 'junit:junit:4.13.1'
-    testImplementation 'org.projectlombok:lombok:1.18.28'
-    compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
+
+    compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation 'junit:junit:4.13.1'
+	testImplementation 'org.projectlombok:lombok:1.18.28'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 

@@ -18,7 +18,7 @@ import java.util.List;
 
 @NoArgsConstructor
 @Getter
-@ToString
+@ToString(exclude = {"cancels", "smsChecks"})
 @Table(name="payments")
 @Entity
 public class Payment extends BaseTimeEntity {

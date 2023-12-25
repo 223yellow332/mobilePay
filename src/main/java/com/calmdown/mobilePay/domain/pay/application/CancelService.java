@@ -5,12 +5,15 @@ import com.calmdown.mobilePay.domain.pay.entity.Cancel;
 import com.calmdown.mobilePay.domain.pay.entity.MobileCarrier;
 import com.calmdown.mobilePay.domain.pay.entity.Payment;
 import com.calmdown.mobilePay.domain.pay.repository.CancelRepository;
+import com.calmdown.mobilePay.domain.pay.repository.PaymentRepository;
 import com.calmdown.mobilePay.global.exception.errorCode.CommonErrorCode;
 import com.calmdown.mobilePay.global.exception.exception.UserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CancelService {
 
     private final CancelRepository cancelRepository;
+    private final PaymentRepository paymentRepository;
 
     /**
      * 취소 요청 후 취소 정보 저장
@@ -48,12 +52,13 @@ public class CancelService {
     public Cancel updateCancelStatus(Cancel cancel, Payment payment, MobileCarrier mobileCarrier) {
         if(CommonErrorCode.SUCCESS.getResultCode().equals(mobileCarrier.getCarrierReturnCode())) {
             cancel.updateStatus(StatusCode.CANCEL_SUCCESS);
-            //payment.updateStatus(StatusCode.CANCEL_SUCCESS);
+            payment.updateStatus(StatusCode.CANCEL_SUCCESS);
         }
         else{
             cancel.updateStatus(StatusCode.CANCEL_FAIL);
-            //payment.updateStatus(StatusCode.CANCEL_FAIL);
+            payment.updateStatus(StatusCode.CANCEL_FAIL);
         }
+        paymentRepository.save(payment);
         return cancelRepository.save(cancel);
     }
 
