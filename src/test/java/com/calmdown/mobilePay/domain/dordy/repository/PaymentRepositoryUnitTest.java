@@ -18,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Commit;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 
@@ -66,7 +67,7 @@ public class PaymentRepositoryUnitTest {
                 .merchant(merchant)
                 .carrierName(CarrierName.KT)
                 .statusCode(StatusCode.CERT_READY)
-                .merchantReqDt(new Date())
+                .merchantReqDt(LocalDateTime.now())
                 .payAmount(9199)
                 .phone("01000000000")
                 .userInfo(UserInfo.builder()
@@ -104,7 +105,7 @@ public class PaymentRepositoryUnitTest {
                 .merchant(merchant)
                 .carrierName(CarrierName.KT)
                 .statusCode(StatusCode.CERT_READY)
-                .merchantReqDt(new Date())
+                .merchantReqDt(LocalDateTime.now())
                 .payAmount(9199)
                 .phone("01000000000")
                 .userInfo(UserInfo.builder()
@@ -144,7 +145,7 @@ public class PaymentRepositoryUnitTest {
                 //.merchantTrxid(merchant)
                 .carrierName(CarrierName.KT)
                 .statusCode(StatusCode.CERT_READY)
-                .merchantReqDt(new Date())
+                .merchantReqDt(LocalDateTime.now())
                 .payAmount(9199)
                 .phone("01000000000")
                 .userInfo(UserInfo.builder()

@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +26,7 @@ public class Payment extends BaseTimeEntity {
 
     //결제 ID
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="payment_id")
     private long id;
 
@@ -81,11 +82,11 @@ public class Payment extends BaseTimeEntity {
 
     //가맹점 요청일시
     @Temporal(TemporalType.TIMESTAMP)
-    private Date merchantReqDt;
+    private LocalDateTime merchantReqDt;
 
     @Builder
     public Payment(Merchant merchant, StatusCode statusCode, CarrierName carrierName, long payAmount, String phone
-    ,UserInfo userInfo, String merchantTrxid, Date merchantReqDt) {
+    ,UserInfo userInfo, String merchantTrxid, LocalDateTime merchantReqDt) {
         this.merchant = merchant;
         this.statusCode = statusCode;
         this.carrierName = carrierName;
@@ -98,7 +99,7 @@ public class Payment extends BaseTimeEntity {
 
     @Builder(builderMethodName = "certReqBuilder")
     public Payment(String phone, CarrierName carrierName, StatusCode statusCode,
-                   UserInfo userInfo, long payAmount, String merchantTrxid, Date merchantReqDt){
+                   UserInfo userInfo, long payAmount, String merchantTrxid, LocalDateTime merchantReqDt){
         this.phone = phone;
         this.carrierName = carrierName;
         this.statusCode = statusCode;

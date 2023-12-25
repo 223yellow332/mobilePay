@@ -6,7 +6,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @EnableAspectJAutoProxy // AOP 추가
-@EnableJpaAuditing
+//@EnableJpaAuditing
 @SpringBootApplication
 public class MobilePayApplication {
 

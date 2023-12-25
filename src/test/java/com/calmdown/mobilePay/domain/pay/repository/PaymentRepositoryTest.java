@@ -64,7 +64,7 @@ class PaymentRepositoryTest {
                         .phone("01012344885")
                         .userInfo(userInfo)
                         .merchantTrxid(UUID.randomUUID().toString().substring(0,13))
-                        .merchantReqDt(java.sql.Timestamp.valueOf(LocalDateTime.now()))
+                        .merchantReqDt(LocalDateTime.now())
                         .build());
 
         //when
@@ -89,7 +89,7 @@ class PaymentRepositoryTest {
                 .phone("01012344885")
                 .userInfo(userInfo)
                 .merchantTrxid(UUID.randomUUID().toString().substring(0,13))
-                .merchantReqDt(java.sql.Timestamp.valueOf(LocalDateTime.now()))
+                .merchantReqDt(LocalDateTime.now())
                 .build());
 
         //when
@@ -114,7 +114,7 @@ class PaymentRepositoryTest {
                 .phone("01012344885")
                 .userInfo(userInfo)
                 .merchantTrxid(UUID.randomUUID().toString().substring(0,13))
-                .merchantReqDt(java.sql.Timestamp.valueOf(LocalDateTime.now()))
+                .merchantReqDt(LocalDateTime.now())
                 .build());
 
         //when & then
@@ -135,7 +135,7 @@ class PaymentRepositoryTest {
                 .phone("01012344885")
                 .userInfo(userInfo)
                 .merchantTrxid(UUID.randomUUID().toString().substring(0,13))
-                .merchantReqDt(java.sql.Timestamp.valueOf(LocalDateTime.now()))
+                .merchantReqDt(LocalDateTime.now())
                 .build());
 
         //when
@@ -162,7 +162,7 @@ class PaymentRepositoryTest {
                 .phone("01012344885")
                 .userInfo(userInfo)
                 .merchantTrxid(UUID.randomUUID().toString().substring(0,13))
-                .merchantReqDt(java.sql.Timestamp.valueOf(LocalDateTime.now()))
+                .merchantReqDt(LocalDateTime.now())
                 .build());
 
         MobileCarrier mobileCarrier = MobileCarrier.builder()

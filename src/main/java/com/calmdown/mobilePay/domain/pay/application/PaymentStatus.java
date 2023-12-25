@@ -60,7 +60,7 @@ public class PaymentStatus {
         GatewayResponse gwResponse = simpleGwService.cert(savePayment);
 
         // gw 통신 결과 저장과 Payment 거래 상태 변경
-        MobileCarrier mobileCarrier = mobileCarrierService.save(gwResponse.toEntity());
+        MobileCarrier mobileCarrier = mobileCarrierService.save(gwResponse.toEntity(payment));
         paymentService.saveMobileResponse(savePayment, mobileCarrier);
 
         if(CommonErrorCode.SUCCESS.getResultCode().equals(mobileCarrier.getCarrierReturnCode())) {
@@ -140,12 +140,12 @@ public class PaymentStatus {
         SmsCheck smsCheck = smsCheckService.save(request, payment);
 
         if (StatusCode.SMS_CHECK_SUCCESS.equals(smsCheck.getStatusCode()))
-            errorCode = CommonErrorCode.SMS_CHECK_NUMBER_MISMATCH;
-        else
             errorCode = CommonErrorCode.SUCCESS;
+        else
+            errorCode = CommonErrorCode.SMS_CHECK_NUMBER_MISMATCH;
 
         return SmsCheckResponseDto.builder()
-                .paymentId(payment.getId())
+                .paymentId(String.valueOf(payment.getId()))
                 .resultCode(errorCode.getResultCode())
                 .resultMessage(errorCode.getMessage())
                 .build();
@@ -177,7 +177,7 @@ public class PaymentStatus {
         GatewayResponse gwResponse = simpleGwService.auth(payment);
         
         // Payment 거래 상태 변경
-        paymentService.updateMobileResponse(payment, gwResponse.toEntity());
+        paymentService.updateMobileResponse(payment, gwResponse);
         mobileCarrierService.updateStatus(payment.getMobileCarrier(), gwResponse);
 
         AuthResponseDto response = AuthResponseDto.builder()
@@ -199,7 +199,7 @@ public class PaymentStatus {
         log.info("PaymentCancelRequestDto => " + request.toString());
 
         // 가맹점 ID 유효성 검증
-        Merchant merchant = merchantService.findById(request.getMerchantId());
+        Merchant merchant = merchantService.findById(Long.valueOf(request.getPaymentId()));
 
         // Payment 승인성공(AUTH_SUCCESS) 거래 내역 조회
         Payment payment = paymentService.checkPaymentIdStatus(Long.valueOf(request.getPaymentId()), StatusCode.AUTH_SUCCESS, merchant);
@@ -217,10 +217,10 @@ public class PaymentStatus {
 
         // gw 통신 및 결과 UPDATE
         GatewayResponse gwResponse = simpleGwService.cancel(payment);
-        MobileCarrier mobileCarrier = mobileCarrierService.save(gwResponse.toEntity());
+//        MobileCarrier mobileCarrier = mobileCarrierService.save(gwResponse.toEntity());
 
         // 취소 승인 -->
-        cancelService.updateCancelStatus(saveCancel, payment, mobileCarrier);
+        cancelService.updateCancelStatus(saveCancel, payment, gwResponse);
 
         return CancelResponseDto.builder()
                 .paymentId(request.getPaymentId())

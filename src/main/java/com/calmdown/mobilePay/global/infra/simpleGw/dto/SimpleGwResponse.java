@@ -17,8 +17,9 @@ public class SimpleGwResponse implements GatewayResponse{
     private String resultCode;
     private String resultMessage;
 
-    public MobileCarrier toEntity() {
+    public MobileCarrier toEntity(Payment payment) {
         return MobileCarrier.builder()
+                .payment(payment)
                 .carrierTrxid(mobileTrxid)
                 .carrierReturnCode(resultCode)
                 .carrierReturnMsg(resultMessage)

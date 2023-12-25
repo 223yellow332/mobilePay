@@ -29,5 +29,5 @@ public class AuthRequestDto {
     //결제금액
     @Positive(message = "결제금액은 1원 이상부터 가능합니다.")
     @Max(1000000)
-    public Long amount;
+    public Long payAmount;
 }

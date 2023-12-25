@@ -30,6 +30,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 
@@ -93,7 +95,7 @@ public class PaymentServiceUnitTest {
                 //.merchant(merchant.getId())
                 .carrierName(CarrierName.KT)
                 .statusCode(StatusCode.CERT_READY)
-                .merchantReqDt(new Date())
+                .merchantReqDt(LocalDateTime.now())
                 .payAmount(9199)
                 .phone("01000000000")
                 .userInfo(UserInfo.builder()
