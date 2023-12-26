@@ -5,6 +5,7 @@ import com.calmdown.mobilePay.domain.pay.StatusCode;
 import com.calmdown.mobilePay.domain.pay.entity.CarrierName;
 import com.calmdown.mobilePay.domain.pay.entity.Payment;
 import com.calmdown.mobilePay.domain.pay.entity.UserInfo;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -15,6 +16,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /*
@@ -35,9 +37,8 @@ public class CertRequestDto {
     public String merchantTrxid;
 
     // 요청시간 -> 인증때만
-    // @Length(min = 14, max = 14)
-    @DateTimeFormat(pattern = "yyyyMMddHHmmss")
-    public Date requestDatetime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMddHHmmss", timezone = "Asia/Seoul")
+    public LocalDateTime requestDatetime;
 
     //휴대전화번호
     @NotBlank

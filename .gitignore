@@ -20,6 +20,7 @@ bin/
 ### IntelliJ IDEA ###
 application-private.properties
 log/
+.log
 
 .idea
 *.iws

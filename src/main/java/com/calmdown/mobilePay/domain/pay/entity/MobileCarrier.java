@@ -9,7 +9,7 @@ import lombok.ToString;
 
 @NoArgsConstructor
 @Getter
-@ToString
+@ToString(exclude = "payment")
 @Entity
 @Table(name="mobile_carrier")
 public class MobileCarrier {

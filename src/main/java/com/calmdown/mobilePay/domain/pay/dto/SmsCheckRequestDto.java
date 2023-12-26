@@ -41,7 +41,7 @@ public class SmsCheckRequestDto {
     public SmsCheck toEntity(Payment payment, StatusCode smsCheckStatus){
         return SmsCheck.builder()
                 .payment(payment)
-                .smsCheckStatus(smsCheckStatus)
+                .statusCode(smsCheckStatus)
                 .smsCheckNumber(smsCheckNumber)
                 .build()
                 ;

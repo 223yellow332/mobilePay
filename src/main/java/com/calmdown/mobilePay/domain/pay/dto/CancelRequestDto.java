@@ -20,7 +20,7 @@ public class CancelRequestDto {
 
     // 가맹점ID
     @NotNull
-    public Long merchantId;
+    public String merchantId;
 
     // 가맹점 주문id
     @NotBlank
@@ -32,7 +32,6 @@ public class CancelRequestDto {
     public String paymentId;
 
     //취소금액
-    @NotBlank
     @Max(1000000)
     public Long cancelAmount;
 

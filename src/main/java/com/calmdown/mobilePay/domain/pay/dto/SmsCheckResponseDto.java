@@ -17,17 +17,5 @@ public class SmsCheckResponseDto extends MobilePayCommonRespose {
 
     //결제 ID
     @NotBlank
-    long paymentId;
-
-    //상태코드
-    @NotNull
-    StatusCode statusCode;
-
-    //인증번호
-    @NotBlank
-    @Length(max=6)
-    String verificationCode;
-
-
-
+    String paymentId;
 }

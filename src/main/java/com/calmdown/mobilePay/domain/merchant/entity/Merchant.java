@@ -12,7 +12,7 @@ import java.util.List;
 
 @NoArgsConstructor
 @Getter
-@ToString
+@ToString(exclude = "payments")
 @Entity
 @Table(name="merchant")
 public class Merchant {

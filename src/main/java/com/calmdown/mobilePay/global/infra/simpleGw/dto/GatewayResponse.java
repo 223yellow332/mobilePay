@@ -12,5 +12,5 @@ public interface GatewayResponse {
 
     String getResultMessage();
 
-    MobileCarrier toEntity();
+    MobileCarrier toEntity(Payment payment);
 }

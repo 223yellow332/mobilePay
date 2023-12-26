@@ -5,10 +5,14 @@ import com.calmdown.mobilePay.domain.pay.StatusCode;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-@Table(name="payments_cancel")
+@NoArgsConstructor
 @Getter
+@ToString
 @Entity
+@Table(name="payments_cancel")
 public class Cancel extends BaseTimeEntity {
 
     @Id @GeneratedValue
@@ -31,6 +35,7 @@ public class Cancel extends BaseTimeEntity {
     @Builder
     public Cancel(Payment payment, long cancelAmount, StatusCode statusCode){
         this.payment = payment;
+        payment.getCancels().add(this);
         this.cancelAmount = cancelAmount;
         this.statusCode = statusCode;
     }

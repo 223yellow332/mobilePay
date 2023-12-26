@@ -8,8 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@ToString
 @NoArgsConstructor
+@ToString(exclude = "payment")
 @Getter
 @Entity
 public class SmsCheck extends BaseTimeEntity {
@@ -25,19 +25,18 @@ public class SmsCheck extends BaseTimeEntity {
     private Payment payment;
 
     //SMS 인증상태
-    @Column(name="result_code")
     @Enumerated(EnumType.STRING) //[SMS_CHECK_READY, SMS_CHECK_SUCCESS,SMS_CHECK_FAILURE]
-    private StatusCode smsCheckStatus;
+    private StatusCode statusCode;
 
     //SMS 인증번호
     @Column(name="sms_check_number")
-    //private Long smsCheckNumber;
     private String smsCheckNumber;
 
     @Builder
-    public SmsCheck(Payment payment, StatusCode smsCheckStatus, String smsCheckNumber) {
+    public SmsCheck(Payment payment, StatusCode statusCode, String smsCheckNumber) {
         this.payment = payment;
-        this.smsCheckStatus = smsCheckStatus;
+        payment.getSmsChecks().add(this);
+        this.statusCode = statusCode;
         this.smsCheckNumber = smsCheckNumber;
     }
 

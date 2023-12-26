@@ -74,20 +74,20 @@ public class PaymentService {
     /**
      * gw 통신 결과 업데이트
      * @param payment
-     * @param mobileCarrier
+     * @param gwResponse
      * @return
      */
     @Transactional
-    public Payment updateMobileResponse(Payment payment, MobileCarrier mobileCarrier) {
-        if(CommonErrorCode.SUCCESS.getResultCode().equals(mobileCarrier.getCarrierReturnCode()))
+    public Payment updateMobileResponse(Payment payment, GatewayResponse gwResponse) {
+        if(CommonErrorCode.SUCCESS.getResultCode().equals(gwResponse.getResultCode()))
             payment.updateStatus(StatusCode.AUTH_SUCCESS);
         else
             payment.updateStatus(StatusCode.AUTH_FAILURE);
 
         payment.getMobileCarrier()
-                .updateResult(mobileCarrier.getCarrierTrxid(),
-                        mobileCarrier.getCarrierReturnCode(),
-                        mobileCarrier.getCarrierReturnMsg());
+                .updateResult(gwResponse.getMobileTrxid(),
+                        gwResponse.getResultCode(),
+                        gwResponse.getResultMessage());
 
         return paymentRepository.save(payment);
     }
